@@ -10,8 +10,9 @@ function initState() {
 
 initState();
 
-// Cliente Supabase
-const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// Cliente Supabase — só inicializa se as credenciais forem reais
+const DB_READY = !SUPABASE_URL.includes('SEU_PROJECT_ID') && !SUPABASE_ANON_KEY.includes('SUA_ANON');
+const db = DB_READY ? supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 
 let saveTimeout = null;
 
@@ -31,6 +32,7 @@ function hideLoadingScreen() {
 }
 
 async function loadState() {
+  if (!DB_READY) return;
   setSyncStatus('Carregando…');
   try {
     const { data, error } = await db
@@ -39,7 +41,7 @@ async function loadState() {
       .eq('id', CHAMPIONSHIP_ID)
       .single();
 
-    if (error && error.code !== 'PGRST116') throw error; // PGRST116 = not found
+    if (error && error.code !== 'PGRST116') throw error;
 
     if (data?.state) {
       const saved = data.state;
@@ -61,8 +63,8 @@ async function loadState() {
   }
 }
 
-// Salva o estado no Supabase (debounced)
 function scheduleSave() {
+  if (!DB_READY) return;
   clearTimeout(saveTimeout);
   setSyncStatus('Salvando…', 'saving');
   saveTimeout = setTimeout(saveState, 800);

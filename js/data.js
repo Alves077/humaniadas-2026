@@ -3,6 +3,19 @@ const TEAMS = [
   "GEMEL", "AECS", "RI UFF", "HOTUR UFF", "RI UFRJ"
 ];
 
+// Arquivo de logo em img/teams/<key>.png — adicione o arquivo e aparece automaticamente
+const TEAM_COLORS = {
+  "GPDES":     "#c0541a",
+  "SPUFF":     "#1a6fc0",
+  "PSICO UFRJ":"#1a6fc0",
+  "PSICO PUC": "#1a8c3a",
+  "GEMEL":     "#8c1a1a",
+  "AECS":      "#7a1a8c",
+  "RI UFF":    "#c0a01a",
+  "HOTUR UFF": "#1a8c8c",
+  "RI UFRJ":   "#1a6fc0",
+};
+
 const POINTS_BY_PLACEMENT = { 1: 16, 2: 13, 3: 10, 4: 8, 5: 6, 6: 5, 7: 4, 8: 3, 9: 1 };
 
 const SPORT_ICONS = {

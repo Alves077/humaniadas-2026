@@ -1,12 +1,10 @@
-// Estado de autenticação — dura só a sessão do navegador
-let isAdmin = sessionStorage.getItem('humaniadas_admin') === 'true';
+// Without real DB credentials the app is a local simulator — everyone is admin.
+// Once Supabase credentials are configured in config.js, login is required.
+let isAdmin = !DB_READY || sessionStorage.getItem('humaniadas_admin') === 'true';
 
 function handleAdminToggle() {
-  if (isAdmin) {
-    logoutAdmin();
-  } else {
-    openAdminModal();
-  }
+  if (isAdmin) logoutAdmin();
+  else openAdminModal();
 }
 
 function openAdminModal() {
@@ -49,25 +47,23 @@ function updateAdminUI() {
   const icon = document.getElementById('adminToggleIcon');
   const label = document.getElementById('adminToggleLabel');
   const btn = document.getElementById('adminToggleBtn');
-  const resetBtn = document.getElementById('resetBtn');
-
   if (isAdmin) {
     icon.textContent = '🔓';
     label.textContent = 'Admin ativo';
     btn.classList.add('admin-active');
-    resetBtn.style.display = 'block';
   } else {
     icon.textContent = '🔒';
-    label.textContent = 'Modo Admin';
+    label.textContent = 'Admin';
     btn.classList.remove('admin-active');
-    resetBtn.style.display = 'none';
   }
 }
 
-// Fecha modal ao clicar fora
-document.getElementById('adminModal').addEventListener('click', function (e) {
+document.getElementById('adminModal').addEventListener('click', function(e) {
   if (e.target === this) closeAdminModal();
 });
 
-// Aplica estado inicial
 updateAdminUI();
+if (!DB_READY) {
+  const btn = document.getElementById('adminToggleBtn');
+  if (btn) btn.style.display = 'none';
+}
