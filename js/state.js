@@ -23,6 +23,13 @@ function setSyncStatus(msg, cls = '') {
 }
 
 // Carrega o estado salvo no Supabase
+function hideLoadingScreen() {
+  const el = document.getElementById('loadingScreen');
+  if (!el) return;
+  el.classList.add('hidden');
+  setTimeout(() => el.remove(), 500);
+}
+
 async function loadState() {
   setSyncStatus('Carregando…');
   try {
@@ -50,7 +57,7 @@ async function loadState() {
     setSyncStatus('');
   } catch (e) {
     console.error('Erro ao carregar estado:', e);
-    setSyncStatus('Erro ao carregar', 'error');
+    setSyncStatus('Sem conexão', 'error');
   }
 }
 
@@ -78,6 +85,7 @@ async function saveState() {
 
 // Atualiza o vencedor de um confronto e propaga cascata
 function setWinner(sportName, matchKey, team) {
+  if (!isAdmin) return;
   state.brackets[sportName][matchKey] = team || null;
 
   const deps = {
@@ -99,6 +107,7 @@ function setWinner(sportName, matchKey, team) {
 
 // Atualiza colocação no cheerleading
 function setCheer(pos, team) {
+  if (!isAdmin) return;
   state.cheer[pos] = team || null;
   renderAll();
   scheduleSave();

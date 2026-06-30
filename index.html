@@ -8,6 +8,38 @@
 </head>
 <body>
 
+<!-- Loading screen -->
+<div class="loading-screen" id="loadingScreen">
+  <div class="loading-inner">
+    <div class="loading-mark">H</div>
+    <div class="loading-title">Humaniadas 2026</div>
+    <div class="loading-bar"><div class="loading-bar-fill"></div></div>
+    <div class="loading-label">Carregando resultados…</div>
+  </div>
+</div>
+
+<!-- Modal de login admin -->
+<div class="modal-overlay" id="adminModal">
+  <div class="modal">
+    <div class="modal-icon">🔐</div>
+    <h2 class="modal-title">Acesso Admin</h2>
+    <p class="modal-sub">Digite a senha para editar os resultados</p>
+    <input
+      type="password"
+      id="adminPasswordInput"
+      class="modal-input"
+      placeholder="Senha"
+      onkeydown="if(event.key==='Enter') submitAdminLogin()"
+      autofocus
+    >
+    <div class="modal-error" id="adminError"></div>
+    <div class="modal-actions">
+      <button class="modal-btn cancel" onclick="closeAdminModal()">Cancelar</button>
+      <button class="modal-btn confirm" onclick="submitAdminLogin()">Entrar</button>
+    </div>
+  </div>
+</div>
+
 <div class="app">
 
   <!-- Sidebar -->
@@ -35,7 +67,13 @@
     </nav>
     <div class="sidebar-footer">
       <div class="sync-status" id="syncStatus"></div>
-      <button class="reset-btn" onclick="resetAll()">Zerar tudo</button>
+      <div class="admin-zone" id="adminZone">
+        <button class="admin-toggle" id="adminToggleBtn" onclick="handleAdminToggle()">
+          <span id="adminToggleIcon">🔒</span>
+          <span id="adminToggleLabel">Modo Admin</span>
+        </button>
+        <button class="reset-btn" id="resetBtn" onclick="resetAll()" style="display:none">Zerar tudo</button>
+      </div>
     </div>
   </aside>
 
@@ -66,7 +104,7 @@
       <div class="view-header">
         <div>
           <h1 class="view-title">Chaveamentos</h1>
-          <p class="view-sub">Selecione um esporte para preencher os resultados</p>
+          <p class="view-sub">Selecione um esporte para ver os resultados</p>
         </div>
         <div class="progress-pill" id="sportsProgressPill"></div>
       </div>
@@ -99,7 +137,7 @@
       <div class="view-header">
         <div>
           <h1 class="view-title">📣 Cheerleading</h1>
-          <p class="view-sub">Defina a colocação final de cada equipe</p>
+          <p class="view-sub">Colocação final de cada equipe</p>
         </div>
       </div>
       <div class="cheer-container">
@@ -116,6 +154,7 @@
 <script src="js/data.js"></script>
 <script src="js/logic.js"></script>
 <script src="js/state.js"></script>
+<script src="js/admin.js"></script>
 <script src="js/render.js"></script>
 <script src="js/main.js"></script>
 </body>

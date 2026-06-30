@@ -106,6 +106,12 @@ function renderSportGrid() {
 /* ---------- Bracket ---------- */
 function selectEl(slots, current, selectId) {
   const valid = slots.filter(Boolean);
+  if (!isAdmin) {
+    // modo leitura: mostra só o vencedor ou traço
+    if (current) return `<span class="result-winner">✓ ${current}</span>`;
+    if (valid.length < 2) return `<span class="awaiting">—</span>`;
+    return `<span class="awaiting">Aguardando…</span>`;
+  }
   if (valid.length < 2) {
     return `<span class="awaiting">aguardando rodada anterior…</span>`;
   }
@@ -231,19 +237,28 @@ function renderCheer() {
 
   for (let pos = 1; pos <= 9; pos++) {
     const current = state.cheer[pos];
-    const opts = TEAMS.map(t => {
-      const disabled = usedTeams.includes(t) && t !== current ? 'disabled' : '';
-      return `<option value="${t}" ${t === current ? 'selected' : ''} ${disabled}>${t}</option>`;
-    }).join('');
     const row = document.createElement('div');
     row.className = 'cheer-row';
-    row.innerHTML = `
-      <span class="pos-badge">${pos}º</span>
-      <select onchange="setCheer(${pos}, this.value)">
-        <option value="">(escolha)</option>${opts}
-      </select>
-      <span class="pts-tag">${POINTS_BY_PLACEMENT[pos]} pts</span>
-    `;
+
+    if (isAdmin) {
+      const opts = TEAMS.map(t => {
+        const disabled = usedTeams.includes(t) && t !== current ? 'disabled' : '';
+        return `<option value="${t}" ${t === current ? 'selected' : ''} ${disabled}>${t}</option>`;
+      }).join('');
+      row.innerHTML = `
+        <span class="pos-badge">${pos}º</span>
+        <select onchange="setCheer(${pos}, this.value)">
+          <option value="">(escolha)</option>${opts}
+        </select>
+        <span class="pts-tag">${POINTS_BY_PLACEMENT[pos]} pts</span>
+      `;
+    } else {
+      row.innerHTML = `
+        <span class="pos-badge">${pos}º</span>
+        <span class="cheer-team-name">${current || '—'}</span>
+        <span class="pts-tag">${POINTS_BY_PLACEMENT[pos]} pts</span>
+      `;
+    }
     grid.appendChild(row);
   }
 
