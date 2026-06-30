@@ -75,7 +75,10 @@
         <h1 class="view-title">Classificação Geral</h1>
         <p class="view-sub">Pontuação acumulada de todas as modalidades</p>
       </div>
-      <div class="progress-pill" id="progressPill"></div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div class="progress-pill" id="progressPill"></div>
+        <button class="export-btn" onclick="exportRanking()" title="Baixar imagem do ranking">📷 Exportar</button>
+      </div>
     </div>
     <div class="podium-row" id="podiumRow"></div>
     <div class="table-wrap">
@@ -85,6 +88,9 @@
       </table>
     </div>
   </section>
+
+  <!-- EXPORT CANVAS (hidden, used for image generation) -->
+  <div id="exportCanvas" style="position:fixed;left:-9999px;top:0;width:640px;background:#080c10;padding:32px;font-family:Inter,system-ui,sans-serif;"></div>
 
   <!-- CHAVEAMENTOS HUB -->
   <section class="view" id="view-chaveamentos">
@@ -135,6 +141,7 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 <script src="js/config.js"></script>
 <script src="js/data.js"></script>
 <script src="js/logic.js"></script>
