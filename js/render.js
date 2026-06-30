@@ -30,7 +30,8 @@ function renderGeral() {
   const done = countCompletedSports();
 
   const pill = document.getElementById('progressPill');
-  if (pill) pill.innerHTML = `<span>${done}</span> / ${SPORT_NAMES.length} esportes concluídos`;
+  const isMobile = window.innerWidth <= 720;
+  if (pill) pill.innerHTML = `<span>${done}</span> / ${SPORT_NAMES.length} ${isMobile ? '' : 'esportes '}concluídos`;
 
   const podiumRow = document.getElementById('podiumRow');
   const emptyCard = (cls, label) => `
@@ -61,9 +62,9 @@ function renderGeral() {
   }
 
   document.getElementById('standingsHead').innerHTML =
-    `<th>Pos</th><th class="team-col">Time</th>` +
+    `<th class="rank-col">Pos</th><th class="team-col">Time</th>` +
     SPORT_NAMES.map(s => `<th title="${s}">${abbreviate(s)}</th>`).join('') +
-    `<th>Cheer</th><th>Total</th>`;
+    `<th>Cheer</th><th class="total-col">Total</th>`;
 
   document.getElementById('standingsBody').innerHTML = standings.map(r => {
     const cells = SPORT_NAMES.map(s => {
@@ -71,11 +72,11 @@ function renderGeral() {
       return `<td class="${v === 0 ? 'zero' : ''}">${v || '–'}</td>`;
     }).join('');
     return `<tr>
-      <td class="rank">${anyPoints ? r.position : '–'}</td>
+      <td class="rank rank-col">${anyPoints ? r.position : '–'}</td>
       <td class="team-col">${teamAvatar(r.team, 24)} ${r.team}</td>
       ${cells}
       <td class="${r.cheer === 0 ? 'zero' : ''}">${r.cheer || '–'}</td>
-      <td class="total">${r.total}</td>
+      <td class="total total-col">${r.total}</td>
     </tr>`;
   }).join('');
 }
@@ -241,12 +242,158 @@ function renderR1Feeder(sportName, b, m) {
        </select>`
     : `<span style="font-size:13px;color:${current?'var(--accent)':'var(--text-dim)'};">${current ? '✓ '+current : 'Aguardando…'}</span>`;
 
-  return `<div style="display:flex;align-items:center;gap:16px;background:var(--bg-card);border:1px solid var(--line);border-radius:8px;padding:12px 16px;margin-bottom:20px;max-width:560px;">
-    <div style="font-family:var(--font-display);font-size:10px;letter-spacing:2px;color:var(--text-dim);text-transform:uppercase;white-space:nowrap;">1ª Rodada</div>
-    <div style="flex:1;font-size:13px;color:var(--text-mid);">${b.B4} <span style="color:var(--text-dim);">×</span> ${b.B5}</div>
-    ${inner}
+  return `<div style="background:var(--bg-card);border:1px solid var(--line);border-radius:8px;padding:12px 16px;margin-bottom:20px;max-width:560px;">
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:${isAdmin?'10px':'0'};">
+      <div style="font-family:var(--font-display);font-size:10px;letter-spacing:2px;color:var(--text-dim);text-transform:uppercase;white-space:nowrap;">1ª Rodada</div>
+      <div style="flex:1;font-size:13px;color:var(--text-mid);">${b.B4} <span style="color:var(--text-dim);">×</span> ${b.B5}</div>
+      ${!isAdmin ? inner : ''}
+    </div>
+    ${isAdmin ? `<div>${inner}</div>` : ''}
   </div>`;
 }
+
+let _bmActiveIdx = 0;
+
+// bSlot variant for mobile: shows a descriptive label when team is unknown
+function bSlotHint(team, winner, hint) {
+  if (team) {
+    const isWin = winner && winner === team;
+    return `<div class="b-slot ${isWin ? 'winner' : ''}">${teamAvatar(team, 22)}<span class="b-slot-name">${team}</span></div>`;
+  }
+  return `<div class="b-slot empty"><span class="b-slot-name" style="font-style:normal;color:var(--text-dim);font-size:11px;">${hint}</span></div>`;
+}
+
+function bMatchHint(sportName, matchKey, slots, hints) {
+  const current = state.brackets[sportName][matchKey];
+  const id = `${sportName}||${matchKey}`;
+  return `<div class="b-match">
+    ${bSlotHint(slots[0], current, hints[0])}
+    ${bSlotHint(slots[1], current, hints[1])}
+    <div class="b-select-wrap">${bSelectOrResult(slots, current, id)}</div>
+  </div>`;
+}
+
+// Mobile bracket layout constants
+const BM_MATCH_H  = 140;   // match card height (2 slots ~50px each + select ~34px + borders)
+const BM_INNER    = 16;    // gap between the two matches in a pair
+const BM_PAIR_H   = BM_MATCH_H * 2 + BM_INNER;  // 296
+const BM_PAIR_GAP = 40;                           // gap between the two pairs
+const BM_TOTAL    = BM_PAIR_H * 2 + BM_PAIR_GAP; // 632
+
+// Absolute top positions for each match (R2)
+const BM_R2 = [
+  0,                              // r2a
+  BM_MATCH_H + BM_INNER,         // r2b  (156)
+  BM_PAIR_H + BM_PAIR_GAP,       // r2c  (336)
+  BM_PAIR_H + BM_PAIR_GAP + BM_MATCH_H + BM_INNER, // r2d  (492)
+];
+// Semi: centered inside each pair
+const BM_SEMI_OFF = (BM_PAIR_H - BM_MATCH_H) / 2; // 78
+const BM_SEMI = [
+  BM_SEMI_OFF,                    // r3a  (78)
+  BM_PAIR_H + BM_PAIR_GAP + BM_SEMI_OFF, // r3b  (414)
+];
+// Final: centered in total height
+const BM_FINAL_TOP = (BM_TOTAL - BM_MATCH_H) / 2; // 246
+
+function bmLabel(text, top) {
+  return `<div style="position:absolute;top:${top - 18}px;left:0;right:0;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--text-dim);">${text}</div>`;
+}
+
+function bmColBody(innerHtml) {
+  return `<div style="position:relative;height:${BM_TOTAL}px;">${innerHtml}</div>`;
+}
+
+function bmAt(top, html, label = '') {
+  return `${label ? bmLabel(label, top) : ''}
+    <div style="position:absolute;top:${top}px;left:0;right:0;">${html}</div>`;
+}
+
+// ── Mobile bracket (scrollable columns) ───────────────────────────────────────
+function renderBracketMobile(s, b, m) {
+  // save current column before re-render
+  const prevScroll = document.getElementById('bmScroll');
+  if (prevScroll) {
+    const w = prevScroll.offsetWidth;
+    if (w > 0) _bmActiveIdx = Math.round(prevScroll.scrollLeft / w);
+  }
+  const rounds = [
+    {
+      label: '1ª Rodada',
+      html: bmColBody(bmAt(BM_FINAL_TOP, renderR1Feeder(s, b, m), '1ª Rodada'))
+    },
+    {
+      label: 'Rodada 2',
+      html: bmColBody(
+        bmAt(BM_R2[0], bMatchHint(s,'r2a',[m.r1.winner,b.D8],['Venc. 1ª Rodada',b.D8]), 'Chave A — Jogo 1') +
+        bmAt(BM_R2[1], bMatchHint(s,'r2b',[b.D10,b.D12],[b.D10,b.D12]), 'Chave A — Jogo 2') +
+        bmAt(BM_R2[2], bMatchHint(s,'r2c',[b.D14,b.D16],[b.D14,b.D16]), 'Chave B — Jogo 1') +
+        bmAt(BM_R2[3], bMatchHint(s,'r2d',[b.D18,b.D20],[b.D18,b.D20]), 'Chave B — Jogo 2')
+      )
+    },
+    {
+      label: 'Semifinal',
+      html: bmColBody(
+        bmAt(BM_SEMI[0], bMatchHint(s,'r3a',[m.r2a.winner,m.r2b.winner],['Venc. Jogo 1','Venc. Jogo 2']), 'Semifinal A') +
+        bmAt(BM_SEMI[1], bMatchHint(s,'r3b',[m.r2c.winner,m.r2d.winner],['Venc. Jogo 3','Venc. Jogo 4']), 'Semifinal B')
+      )
+    },
+    {
+      label: 'Final',
+      html: bmColBody(
+        bmAt(BM_FINAL_TOP,
+          bMatchHint(s,'final',[m.r3a.winner,m.r3b.winner],['Venc. Semi A','Venc. Semi B']) +
+          `<div class="b-champion-badge ${m.final.winner?'has-winner':''}" style="margin-top:10px;">
+            <span class="b-champ-trophy">🏆</span>
+            <span class="b-champ-name">${m.final.winner||'—'}</span>
+          </div>`,
+          'Final'
+        )
+      )
+    },
+  ];
+
+  const nav = rounds.map((r, i) =>
+    `<button class="bm-pill ${i===0?'active':''}" data-idx="${i}" onclick="bmScrollTo(${i})">${r.label}</button>`
+  ).join('');
+
+  const cols = rounds.map((r, i) =>
+    `<div class="bm-col" id="bmc-${i}">
+      <div class="bm-col-label">${r.label}</div>
+      ${r.html}
+    </div>`
+  ).join('');
+
+  document.getElementById('bracketR1').innerHTML = '';
+  document.getElementById('bracketTree').innerHTML =
+    `<div class="bm-nav" id="bmNav">${nav}</div>
+     <div class="bm-scroll" id="bmScroll">${cols}</div>`;
+
+  // restore scroll position instantly (before paint)
+  const scroll = document.getElementById('bmScroll');
+  requestAnimationFrame(() => {
+    scroll.scrollLeft = _bmActiveIdx * scroll.offsetWidth;
+    document.querySelectorAll('.bm-pill').forEach((p, i) =>
+      p.classList.toggle('active', i === _bmActiveIdx));
+  });
+
+  // sync pill on scroll
+  scroll.addEventListener('scroll', () => {
+    const w = scroll.offsetWidth;
+    const idx = Math.round(scroll.scrollLeft / w);
+    _bmActiveIdx = idx;
+    document.querySelectorAll('.bm-pill').forEach((p, i) =>
+      p.classList.toggle('active', i === idx));
+  }, { passive: true });
+}
+
+window.bmScrollTo = function(idx) {
+  const scroll = document.getElementById('bmScroll');
+  if (!scroll) return;
+  scroll.scrollTo({ left: idx * scroll.offsetWidth, behavior: 'smooth' });
+  document.querySelectorAll('.bm-pill').forEach((p, i) =>
+    p.classList.toggle('active', i === idx));
+};
 
 // ── Main bracket renderer ──────────────────────────────────────────────────────
 function renderBracket() {
@@ -256,7 +403,12 @@ function renderBracket() {
 
   const b = BRACKETS[s];
   const m = getMatches(s);
-  const r1slot = m.r1.winner ? m.r1.winner : `(${b.B4}×${b.B5})`;
+
+  if (window.innerWidth <= 720) {
+    renderBracketMobile(s, b, m);
+    renderBracketStandings(s);
+    return;
+  }
 
   // R2-left: top slot feeds from R1 winner
   const r2aSlots = [m.r1.winner, b.D8];
@@ -298,7 +450,10 @@ function renderBracket() {
 
   document.getElementById('bracketTree').innerHTML = bracketHtml;
   document.getElementById('bracketR1').innerHTML = renderR1Feeder(s, b, m);
+  renderBracketStandings(s);
+}
 
+function renderBracketStandings(s) {
   const stEl = document.getElementById('bracketStandings');
   if (!isSportComplete(s)) {
     stEl.innerHTML = `<p style="color:var(--text-dim);font-size:13px;">A colocação aparece quando o campeão for definido.</p>`;

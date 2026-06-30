@@ -42,7 +42,7 @@
 <!-- Header -->
 <header class="top">
   <div class="top-inner">
-    <div class="brand">
+    <div class="brand" onclick="showView('geral')" style="cursor:pointer;">
       <span class="brand-mark">H</span>
       <div class="brand-text">
         <span class="brand-title">Humaniadas</span>
@@ -62,7 +62,17 @@
         <span id="adminToggleIcon">🔒</span>
         <span id="adminToggleLabel">Admin</span>
       </button>
+      <button class="burger-btn" id="burgerBtn" onclick="toggleMobileMenu()" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
     </div>
+  </div>
+
+  <!-- Mobile nav drawer -->
+  <div class="mobile-nav" id="mobileNav">
+    <button class="mobile-tab" data-view="geral" onclick="mobileNavTo('geral')">🏆 Geral</button>
+    <button class="mobile-tab" data-view="chaveamentos" onclick="mobileNavTo('chaveamentos')">🎯 Chaveamentos</button>
+    <button class="mobile-tab" data-view="cheerleading" onclick="mobileNavTo('cheerleading')">📣 Cheerleading</button>
   </div>
 </header>
 
@@ -71,14 +81,8 @@
   <!-- GERAL -->
   <section class="view active" id="view-geral">
     <div class="view-header">
-      <div>
-        <h1 class="view-title">Classificação Geral</h1>
-        <p class="view-sub">Pontuação acumulada de todas as modalidades</p>
-      </div>
-      <div style="display:flex;align-items:center;gap:10px;">
-        <div class="progress-pill" id="progressPill"></div>
-        <button class="export-btn" onclick="exportRanking()" title="Baixar imagem do ranking">📷 Exportar</button>
-      </div>
+      <h1 class="view-title">Classificação Geral</h1>
+      <div class="progress-pill" id="progressPill"></div>
     </div>
     <div class="podium-row" id="podiumRow"></div>
     <div class="table-wrap">

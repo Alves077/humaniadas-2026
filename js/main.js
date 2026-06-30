@@ -1,15 +1,28 @@
 let currentSport = null;
 
+function toggleMobileMenu() {
+  document.getElementById('burgerBtn').classList.toggle('open');
+  document.getElementById('mobileNav').classList.toggle('open');
+}
+
+function mobileNavTo(view) {
+  showView(view);
+  document.getElementById('burgerBtn').classList.remove('open');
+  document.getElementById('mobileNav').classList.remove('open');
+  // sync active state on mobile tabs
+  document.querySelectorAll('.mobile-tab').forEach(b =>
+    b.classList.toggle('active', b.dataset.view === view));
+}
+
 function showView(name) {
   document.querySelectorAll('section.view').forEach(s => s.classList.remove('active'));
   document.getElementById('view-' + name).classList.add('active');
-  document.querySelectorAll('.tab[data-view]').forEach(b => b.classList.remove('active'));
-  const tab = document.querySelector(`.tab[data-view="${name}"]`);
-  if (tab) {
-    tab.classList.add('active');
-  } else if (name === 'bracket') {
-    document.querySelector('.tab[data-view="chaveamentos"]').classList.add('active');
-  }
+
+  const activeDesktop = name === 'bracket' ? 'chaveamentos' : name;
+  document.querySelectorAll('.tab[data-view]').forEach(b =>
+    b.classList.toggle('active', b.dataset.view === activeDesktop));
+  document.querySelectorAll('.mobile-tab[data-view]').forEach(b =>
+    b.classList.toggle('active', b.dataset.view === activeDesktop));
 }
 
 function openBracket(sportName) {
