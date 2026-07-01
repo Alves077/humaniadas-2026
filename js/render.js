@@ -234,21 +234,22 @@ function connLine() {
 function renderR1Feeder(sportName, b, m) {
   const current = m.r1.winner;
   const id = `${sportName}||r1`;
-  const inner = isAdmin
-    ? `<select id="${id}" onchange="window.__handleSelect(this)" style="background:var(--bg-panel);border:1px solid var(--line);color:var(--text);font-size:12px;padding:4px 8px;border-radius:4px;cursor:pointer;min-width:200px;">
-        <option value="">(escolha o vencedor)</option>
+  const selectOrResult = isAdmin
+    ? `<select id="${id}" onchange="window.__handleSelect(this)" style="background:var(--bg-panel);border:1px solid var(--line);color:var(--text);font-size:11px;padding:3px 6px;border-radius:4px;cursor:pointer;width:100%;">
+        <option value="">(escolha)</option>
         <option value="${b.B4}" ${current===b.B4?'selected':''}>${b.B4}</option>
         <option value="${b.B5}" ${current===b.B5?'selected':''}>${b.B5}</option>
        </select>`
-    : `<span style="font-size:13px;color:${current?'var(--accent)':'var(--text-dim)'};">${current ? '✓ '+current : 'Aguardando…'}</span>`;
+    : `<span style="font-size:11px;color:${current?'var(--accent)':'var(--text-dim)'};">${current ? '✓ '+current : 'Aguardando…'}</span>`;
 
-  return `<div style="background:var(--bg-card);border:1px solid var(--line);border-radius:8px;padding:12px 16px;margin-bottom:20px;max-width:560px;">
-    <div style="display:flex;align-items:center;gap:16px;margin-bottom:${isAdmin?'10px':'0'};">
-      <div style="font-family:var(--font-display);font-size:10px;letter-spacing:2px;color:var(--text-dim);text-transform:uppercase;white-space:nowrap;">1ª Rodada</div>
-      <div style="flex:1;font-size:13px;color:var(--text-mid);">${b.B4} <span style="color:var(--text-dim);">×</span> ${b.B5}</div>
-      ${!isAdmin ? inner : ''}
+  return `<div style="display:flex;align-items:stretch;gap:0;max-width:360px;margin-bottom:16px;background:var(--bg-card);border:1px solid var(--line);border-radius:8px;overflow:hidden;">
+    <div style="flex:1;">
+      <div class="b-slot ${current===b.B4?'winner':''}">${teamAvatar(b.B4,22)}<span class="b-slot-name">${b.B4}</span></div>
+      <div class="b-slot ${current===b.B5?'winner':''}">${teamAvatar(b.B5,22)}<span class="b-slot-name">${b.B5}</span></div>
     </div>
-    ${isAdmin ? `<div>${inner}</div>` : ''}
+    <div style="display:flex;align-items:center;justify-content:center;padding:8px 10px;border-left:1px solid var(--line);min-width:110px;">
+      ${selectOrResult}
+    </div>
   </div>`;
 }
 

@@ -263,6 +263,14 @@ table.standings td.zero { color: #2a3a46; }
 }
 .back-btn:hover { color: var(--text); border-color: var(--accent); }
 
+.clear-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: none; border: 1px solid var(--line); color: var(--text-dim);
+  padding: 6px 12px; border-radius: var(--radius-sm);
+  cursor: pointer; font-size: 12px; transition: all .15s;
+}
+.clear-btn:hover { color: #e05555; border-color: #e05555; }
+
 #bracketR1 { margin-bottom: 16px; }
 .bracket-scroll { overflow-x: auto; padding-bottom: 12px; }
 

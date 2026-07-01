@@ -29,6 +29,16 @@ function openBracket(sportName) {
   currentSport = sportName;
   showView('bracket');
   renderBracket();
+  const btn = document.getElementById('clearBracketBtn');
+  if (btn) btn.style.visibility = isAdmin ? 'visible' : 'hidden';
+}
+
+function clearBracket() {
+  if (!currentSport) return;
+  if (!confirm(`Limpar todos os resultados de ${currentSport}?`)) return;
+  state.brackets[currentSport] = {};
+  saveState();
+  renderAll();
 }
 
 document.querySelectorAll('.tab[data-view]').forEach(btn => {

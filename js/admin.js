@@ -58,6 +58,8 @@ function updateAdminUI() {
     label.textContent = 'Admin';
     btn.classList.remove('admin-active');
   }
+  const clearBtn = document.getElementById('clearBracketBtn');
+  if (clearBtn) clearBtn.style.visibility = isAdmin ? 'visible' : 'hidden';
 }
 
 document.getElementById('adminModal').addEventListener('click', function(e) {
