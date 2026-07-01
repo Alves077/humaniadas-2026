@@ -54,10 +54,8 @@ html, body { background: var(--bg); color: var(--text); font-family: var(--font-
 
 .brand { display: flex; align-items: center; gap: 10px; justify-self: start; }
 .brand-mark {
-  width: 30px; height: 30px; border-radius: 7px;
-  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
-  display: flex; align-items: center; justify-content: center;
-  font-family: var(--font-display); font-weight: 700; font-size: 17px; color: #000;
+  width: 36px; height: 36px; border-radius: 50%;
+  object-fit: cover;
 }
 .brand-text { display: flex; flex-direction: column; line-height: 1; }
 .brand-title { font-family: var(--font-display); font-size: 14px; font-weight: 700; color: var(--text); }
@@ -104,7 +102,7 @@ html, body { background: var(--bg); color: var(--text); font-family: var(--font-
 .admin-toggle.admin-active { color: var(--accent); border-color: var(--accent); background: var(--accent-dim); }
 
 /* ===================== SHELL ===================== */
-.shell { max-width: 1200px; margin: 0 auto; padding: 28px 24px 80px; }
+.shell { max-width: 1200px; margin: 0 auto; padding: 28px 24px 24px; }
 
 .view { display: none; animation: fadein .2s ease; }
 .view.active { display: block; }
@@ -580,7 +578,7 @@ table.standings td.zero { color: #2a3a46; }
   .burger-btn { display: flex; }
   .header-right { justify-self: end; gap: 8px; }
   #adminToggleLabel { display: none; }
-  .shell { padding: 20px 14px 60px; }
+  .shell { padding: 20px 14px 16px; }
 
   /* geral: compact header */
   .view-header { flex-direction: row; align-items: center; gap: 8px; margin-bottom: 16px; flex-wrap: nowrap; }
@@ -627,4 +625,15 @@ table.standings td.zero { color: #2a3a46; }
 
   /* cheerleading */
   .cheer-container { max-width: 100%; }
+}
+
+.site-footer {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  padding: 24px 16px;
+  margin-top: 40px;
+  border-top: 1px solid var(--line);
+  font-size: 12px; color: var(--text-dim); text-align: center;
+}
+.footer-logo {
+  width: 28px; height: 28px; border-radius: 50%; object-fit: cover; opacity: 0.7;
 }

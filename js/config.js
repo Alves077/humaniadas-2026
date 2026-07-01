@@ -1,9 +1,4 @@
-// Substitua pelos valores do seu projeto no Supabase
-// Settings > API > Project URL e anon public key
-const SUPABASE_URL = 'https://SEU_PROJECT_ID.supabase.co';
-const SUPABASE_ANON_KEY = 'SUA_ANON_KEY_AQUI';
+const SUPABASE_URL = 'https://jjmopgirtmtkhzbtogqa.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_UhTHX1rTOl3onu1YWs41lQ_iKvOK-g2';
 
 const CHAMPIONSHIP_ID = 'humaniadas-2026';
-
-// Senha do painel admin — troque antes de subir para produção
-const ADMIN_PASSWORD = 'humaniadas2026';
