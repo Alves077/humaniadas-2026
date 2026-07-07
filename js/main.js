@@ -15,6 +15,11 @@ function mobileNavTo(view) {
 }
 
 function showView(name) {
+  // Ao sair de simulações com filtro ativo, restaura o tema do usuário logado
+  if (name !== 'simulacoes' && simFilter !== 'todas') {
+    simFilter = 'todas';
+    currentUser?.atletica ? applyTeamTheme(currentUser.atletica) : resetTeamTheme();
+  }
   document.querySelectorAll('section.view').forEach(s => s.classList.remove('active'));
   document.getElementById('view-' + name).classList.add('active');
 

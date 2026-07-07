@@ -15,6 +15,7 @@ function applyTeamTheme(atletica) {
   const r      = document.documentElement;
   r.style.setProperty('--accent-rgb',    rgb);
   r.style.setProperty('--bg',            p.bg          || '#14100D');
+  r.style.setProperty('--bg-end',        p.bg          || '#14100D');
   r.style.setProperty('--bg-panel',      p.bgPanel     || '#1A1208');
   r.style.setProperty('--bg-card',       p.bgCard      || '#1E160E');
   r.style.setProperty('--bg-card-hover', p.bgCardHover || '#261C12');
@@ -26,15 +27,16 @@ function applyTeamTheme(atletica) {
   r.style.setProperty('--gold',          gold);
   r.style.setProperty('--gold-dim',      p.goldDim     || `rgba(${rgbG},0.15)`);
   r.style.setProperty('--gold-glow',     `rgba(${rgbG},0.18)`);
+  r.style.setProperty('--text',          '#F0E8DE');
   r.style.setProperty('--text-dim',      p.textDim     || '#7A6050');
   r.style.setProperty('--text-mid',      p.textMid     || '#B89A80');
 }
 
 function resetTeamTheme() {
   ['--accent-rgb',
-   '--bg', '--bg-panel', '--bg-card', '--bg-card-hover',
+   '--bg', '--bg-end', '--bg-panel', '--bg-card', '--bg-card-hover',
    '--accent', '--accent-dim', '--accent-dark', '--line', '--line-strong',
-   '--gold', '--gold-dim', '--gold-glow', '--text-dim', '--text-mid']
+   '--gold', '--gold-dim', '--gold-glow', '--text', '--text-dim', '--text-mid']
     .forEach(v => document.documentElement.style.removeProperty(v));
 }
 

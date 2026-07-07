@@ -4,9 +4,9 @@
   top: 0;
   z-index: 50;
   height: var(--header-h);
-  background: rgba(20, 16, 13, 0.95);
-  backdrop-filter: blur(8px);
+  background: var(--bg-panel);
   border-bottom: 1px solid var(--line);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
 }
 .top-inner {
   max-width: 1200px;
@@ -40,7 +40,7 @@
   font-family: var(--font-display);
   font-size: 14px;
   font-weight: 700;
-  color: var(--text);
+  color: var(--accent);
 }
 .brand-year {
   font-size: 10px;
@@ -57,7 +57,7 @@
 .tab {
   background: none;
   border: none;
-  color: var(--text-dim);
+  color: var(--text-mid);
   font-family: var(--font-body);
   font-size: 14px;
   font-weight: 500;
@@ -69,8 +69,8 @@
   transition: all 0.15s;
 }
 .tab:hover {
-  color: var(--text);
-  background: rgba(200, 112, 42, 0.06);
+  color: var(--accent);
+  background: var(--accent-dim);
 }
 .tab.active {
   color: var(--accent);
@@ -118,7 +118,7 @@
   padding: 6px 14px;
   border-radius: var(--radius-sm);
   background: var(--accent-dim);
-  border: 1px solid var(--accent);
+  border: 1px solid rgba(var(--accent-rgb), 0.40);
   color: var(--accent);
   font-size: 12px;
   font-weight: 600;
@@ -127,7 +127,7 @@
 }
 .auth-btn:hover {
   background: var(--accent);
-  color: var(--bg);
+  color: #FFFFFF;
 }
 
 /* ── Auth tabs (inside modal) ── */
@@ -349,8 +349,8 @@
 }
 .modal-input {
   width: 100%;
-  /* fundo mais escuro que o modal (--bg-panel) para criar hierarquia visível */
-  background: var(--bg);
+  /* fundo levemente acinzentado para criar hierarquia dentro do modal branco */
+  background: #F4F4F6;
   border: 1px solid var(--border-input);
   border-radius: var(--radius-sm);
   color: var(--text);
@@ -367,7 +367,7 @@
 select.modal-input {
   appearance: none;
   -webkit-appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6' fill='none' stroke='%23B89A80' stroke-width='1.5'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6' fill='none' stroke='%23666666' stroke-width='1.5'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 12px center;
   padding-right: 30px;
@@ -398,18 +398,18 @@ select.modal-input {
   flex: none;
   padding: 9px 18px;
   background: none;
-  border: 1px solid rgba(240, 232, 222, 0.18);
+  border: 1px solid rgba(17, 17, 17, 0.15);
   color: var(--text-mid);
   font-weight: 400;
 }
 .modal-btn.cancel:hover {
   color: var(--text);
-  border-color: rgba(240, 232, 222, 0.35);
+  border-color: rgba(17, 17, 17, 0.28);
 }
 .modal-btn.confirm {
   flex: 1;
   background: var(--accent);
-  color: var(--bg);  /* #14100D — aprovado WCAG AAA 5.8:1 */
+  color: #FFFFFF;
   border: 1px solid var(--accent);
   font-weight: 700;
 }
@@ -419,38 +419,42 @@ select.modal-input {
 .loading-screen {
   position: fixed;
   inset: 0;
-  background: var(--bg);
+  background: #FFFFFF;
   z-index: 200;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: opacity 0.35s ease;
+  overflow: hidden;
+}
+.loading-screen::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url('../img/teams/spuff.png') center/300px no-repeat;
+  opacity: 0.08;
+  pointer-events: none;
 }
 .loading-screen.hidden { opacity: 0; pointer-events: none; }
 .loading-inner {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 14px;
 }
 .loading-mark {
-  width: 56px;
-  height: 56px;
-  border-radius: 14px;
-  background: var(--accent);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 30px;
-  color: var(--bg);
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 0 0 2px rgba(229, 37, 53, 0.25), 0 8px 28px rgba(0,0,0,0.55);
 }
 .loading-title {
   font-family: var(--font-display);
   font-size: 20px;
   font-weight: 700;
-  color: var(--text);
+  color: #CC1020;
 }
 .loading-bar {
   width: 160px;
@@ -490,7 +494,7 @@ select.modal-input {
   display: block;
   height: 2px;
   border-radius: 1px;
-  background: var(--text-dim);
+  background: var(--text-mid);
   transition: all 0.2s;
 }
 .burger-btn.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }

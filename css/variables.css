@@ -1,40 +1,41 @@
 :root {
   /* ── Superfícies ─────────────────────────────────────────── */
-  --bg:            #14100D;
-  --bg-panel:      #1A1208;
-  --bg-card:       #1E160E;
-  --bg-card-hover: #261C12;
+  --bg:            #F4F4F6;
+  --bg-end:        #F4F4F6;   /* igual a --bg: sem gradiente no modo padrão */
+  --bg-panel:      #FFFFFF;
+  --bg-card:       #FFFFFF;
+  --bg-card-hover: #FFF5F5;
 
   /* ── Bordas ──────────────────────────────────────────────── */
-  --line:          rgba(200, 112, 42, 0.12);
-  --line-strong:   rgba(200, 112, 42, 0.22);
+  --line:          rgba(204, 16, 32, 0.10);
+  --line-strong:   rgba(204, 16, 32, 0.22);
 
   /* ── Pódio ───────────────────────────────────────────────── */
-  --gold:      #E09A4A;
-  --gold-dim:  #5A3A18;
-  --gold-glow: rgba(224, 154, 74, 0.10);
-  --silver:    #A0B4C8;
-  --bronze:    #9A5A2A;
+  --gold:      #C8870A;
+  --gold-dim:  #FFF3DC;
+  --gold-glow: rgba(200, 135, 10, 0.12);
+  --silver:    #607080;
+  --bronze:    #8A5020;
 
-  /* ── Accent (cobre-terracota) ────────────────────────────── */
-  --accent:      #C8702A;
-  --accent-dim:  rgba(200, 112, 42, 0.10);
-  --accent-dark: #9E5518;
+  /* ── Accent (vermelho Humaniadas) ────────────────────────── */
+  --accent:      #CC1020;
+  --accent-rgb:  204, 16, 32;
+  --accent-dim:  rgba(204, 16, 32, 0.08);
+  --accent-dark: #A00C18;
 
   /* ── Tipografia ──────────────────────────────────────────── */
-  --text:     #F0E8DE;
-  --text-dim: #7A6050;
-  --text-mid: #B89A80;
-  --danger:   #E05545;
+  --text:     #111111;
+  --text-dim: #909099;
+  --text-mid: #555560;
+  --danger:   #CC2020;
 
   /* ── Fontes ──────────────────────────────────────────────── */
   --font-display: "Oswald", "Arial Narrow", Arial, sans-serif;
   --font-body:    "Inter", system-ui, Arial, sans-serif;
   --font-mono:    "JetBrains Mono", "Consolas", monospace;
 
-  /* ── Layout ──────────────────────────────────────────────── */
-  /* ── Interativos ────────────────────────────────────────────── */
-  --border-input: rgba(240, 232, 222, 0.18); /* borda padrão de inputs e selects */
+  /* ── Interativos ─────────────────────────────────────────── */
+  --border-input: rgba(17, 17, 17, 0.18);
 
   /* ── Layout ──────────────────────────────────────────────── */
   --header-h: 58px;

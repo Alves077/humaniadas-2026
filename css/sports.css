@@ -64,12 +64,12 @@
 /* Concluído: borda esquerda sólida como hierarquia máxima */
 .sport-card.done {
   background: var(--bg-card-hover);
-  border-color: var(--gold-dim);
-  border-left: 4px solid var(--gold);
-  box-shadow: 0 0 28px var(--gold-glow), inset 0 0 0 1px var(--gold-glow);
+  border-color: rgba(204, 16, 32, 0.25);
+  border-left: 4px solid var(--accent);
+  box-shadow: 0 0 28px var(--accent-dim), inset 0 0 0 1px var(--accent-dim);
   opacity: 1;
 }
-.sport-card.done:hover { border-color: var(--gold); }
+.sport-card.done:hover { border-color: var(--accent); }
 
 /* card-top: só o badge (emoji removido) */
 .sport-card-top {
@@ -99,8 +99,8 @@
   background: var(--text-dim);
   flex-shrink: 0;
 }
-.sport-badge.done          { color: var(--gold); }
-.sport-badge.done::before  { background: var(--gold); }
+.sport-badge.done          { color: var(--accent); }
+.sport-badge.done::before  { background: var(--accent); }
 
 .sport-name {
   font-family: var(--font-display);
@@ -110,7 +110,7 @@
   margin-bottom: 2px;
 }
 .sport-champ   { font-size: 12px; color: var(--text-dim); }
-.sport-champ b { color: var(--gold); font-weight: 600; }
+.sport-champ b { color: var(--accent); font-weight: 600; }
 
 /* ── Barra de placar única ───────────────────────────────────────
    Substitui os dots separados: uma barra contínua que cresce
@@ -133,7 +133,7 @@
   transition: width 0.4s ease;
   min-width: 0;
 }
-.sport-progress-fill.gold { background: var(--gold); }
+.sport-progress-fill.gold { background: var(--accent-dark); }
 
 /* ===================== GENDER TOGGLE ===================== */
 /* Oculto no desktop; exibido apenas no mobile via media query */

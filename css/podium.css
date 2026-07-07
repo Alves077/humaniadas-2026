@@ -86,7 +86,8 @@
 /* ===================== TABELA GERAL ===================== */
 .table-wrap {
   background: var(--bg-panel);
-  border: 1px solid var(--line);
+  border: 1px solid var(--line-strong);
+  border-top: 2px solid var(--accent);
   border-radius: var(--radius);
   overflow: hidden;
   overflow-x: auto;
@@ -109,8 +110,8 @@ table.standings thead th {
   text-transform: uppercase;
   font-size: 11px;
   letter-spacing: 1px;
-  color: var(--text-dim);
-  background: rgba(255, 255, 255, 0.02);
+  color: var(--accent);
+  background: var(--accent-dim);
 }
 table.standings td.team-col,
 table.standings th.team-col {
@@ -127,7 +128,7 @@ table.standings td.team-col {
   align-items: center;
   gap: 8px;
 }
-table.standings thead th.team-col { background: rgba(255, 255, 255, 0.02); }
+table.standings thead th.team-col { background: var(--accent-dim); }
 table.standings tbody tr:last-child td { border-bottom: none; }
 table.standings tbody tr:hover td    { background: rgba(var(--accent-rgb, 200,112,42), 0.06); }
 
@@ -140,12 +141,14 @@ table.standings td.rank {
 table.standings td.total {
   font-family: var(--font-mono);
   font-weight: 700;
-  color: var(--gold);
+  color: var(--accent);
   font-size: 13px;
 }
 table.standings tbody tr:nth-child(1) td.rank { color: var(--gold); }
 table.standings tbody tr:nth-child(2) td.rank { color: var(--silver); }
 table.standings tbody tr:nth-child(3) td.rank { color: var(--bronze); }
+table.standings tbody tr:nth-child(1) td { background: rgba(204, 16, 32, 0.04); }
+table.standings tbody tr:nth-child(1) td.team-col { border-left: 3px solid var(--accent); }
 table.standings td.zero { color: rgba(var(--accent-rgb, 200,112,42), 0.20); }
 
 .legend-note {

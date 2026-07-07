@@ -48,7 +48,6 @@ function computeStandingsFrom(brackets, cheer) {
 function simDetailTable(sim) {
   const color       = TEAM_COLORS[sim.atletica] || '#888888';
   const rgb         = hexToRgb(color);
-  const textColor   = TEAM_TEXT_COLORS[sim.atletica] || 'var(--text)';
   const headerColor = TEAM_PALETTES[sim.atletica]?.themeAccent || color;
 
   if (!sim.brackets && !sim.cheer) {
@@ -58,6 +57,8 @@ function simDetailTable(sim) {
   const standings = computeStandingsFrom(sim.brackets, sim.cheer);
   const anyPoints = standings.some(r => r.total > 0);
 
+  /* thS usa a cor inline do time (headerColor) para respeitar a identidade da atlética
+     independente do tema da página (admin vermelho vs. dark atlética) */
   const thS  = `style="color:${headerColor};"`;
   const head =
     `<th class="rank-col" ${thS}>Pos</th><th class="team-col" ${thS}>Time</th>` +
@@ -67,26 +68,29 @@ function simDetailTable(sim) {
   const body = standings.map(r => {
     const isOwner  = r.team === sim.atletica;
     const rowStyle = isOwner
-      ? `style="background:rgba(${rgb},0.30); outline:2px solid ${color}; outline-offset:-2px;"`
+      ? `style="background:rgba(${rgb},0.15); outline:2px solid ${color}; outline-offset:-2px;"`
       : '';
 
     const cells = SPORT_NAMES.map(s => {
       const v     = r.perSport[s];
+      /* cellS: owner herda var(--text) do tema — #111 no claro, #F0E8DE no escuro.
+         Não usa TEAM_TEXT_COLORS que são cores claras projetadas só para bg escuro. */
       const cellS = v
         ? (isOwner
-            ? `style="color:${textColor}; font-weight:600;"`
+            ? `style="font-weight:600;"`
             : `style="color:var(--text-mid);"`)
         : '';
       return `<td class="${v === 0 ? 'zero' : ''}" ${cellS}>${v || '–'}</td>`;
     }).join('');
 
-    const posS   = isOwner ? `style="color:${textColor}; font-weight:700;"` : `style="color:var(--text-mid);"`;
-    const teamS  = isOwner ? `style="color:${textColor}; font-weight:700;"` : `style="color:var(--text);"`;
+    const posS   = isOwner ? `style="font-weight:700;"` : `style="color:var(--text-mid);"`;
+    const teamS  = isOwner ? `style="font-weight:700;"` : '';
     const cheerS = r.cheer
-      ? (isOwner ? `style="color:${textColor}; font-weight:600;"` : `style="color:var(--text-mid);"`)
+      ? (isOwner ? `style="font-weight:600;"` : `style="color:var(--text-mid);"`)
       : '';
+    /* totS do owner: cor inline do time, não var(--accent) do tema da página */
     const totS   = isOwner
-      ? `style="color:${textColor}; font-weight:700;"`
+      ? `style="color:${headerColor}; font-weight:700;"`
       : `style="color:var(--text-mid); font-weight:600;"`;
 
     return `<tr ${rowStyle}>
@@ -100,7 +104,7 @@ function simDetailTable(sim) {
 
   return `<div class="sim-detail-scroll">
     <table class="sim-detail-table standings">
-      <thead style="background:rgba(${rgb},0.20);"><tr>${head}</tr></thead>
+      <thead style="background:rgba(${rgb},0.12);"><tr>${head}</tr></thead>
       <tbody>${body}</tbody>
     </table>
   </div>`;
@@ -249,6 +253,11 @@ function renderSimulacoes() {
 
 function setSimFilter(value) {
   simFilter = value;
+  if (value === 'todas') {
+    currentUser?.atletica ? applyTeamTheme(currentUser.atletica) : resetTeamTheme();
+  } else {
+    applyTeamTheme(value);
+  }
   renderSimulacoes();
 }
 
