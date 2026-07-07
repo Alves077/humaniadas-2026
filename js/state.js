@@ -68,11 +68,13 @@ function switchView(official) {
     });
   } else {
     updateViewToggleUI();
+    updateAdminUI();
     loadSimulation().then(() => renderAll());
     return;
   }
   renderAll();
   updateViewToggleUI();
+  updateAdminUI();
 }
 
 function updateViewToggleUI() {

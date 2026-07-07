@@ -37,6 +37,7 @@ async function onSignIn(user) {
     applyTeamTheme(profile.atletica);
     updateAuthUI();
     updateViewToggleUI();
+    updateAdminUI();
     await loadSimulation();
     renderAll();
     if (location.hash === '#simulacoes') onSimulacoesEnter();
@@ -53,6 +54,7 @@ function onSignOut() {
   resetTeamTheme();
   updateAuthUI();
   updateViewToggleUI();
+  updateAdminUI();
   loadState().then(() => renderAll()).catch(() => renderAll());
 }
 
@@ -187,6 +189,7 @@ function updateAuthUI() {
         <div class="user-menu-sub">${escHtml(currentUser.atletica)}</div>
         <hr class="user-menu-sep">
         <button class="user-menu-btn" onclick="logoutUser()">Sair</button>
+        <button class="user-menu-btn" style="color:var(--danger);font-size:11px;opacity:0.7;" onclick="openDeleteAccountModal()">Apagar conta</button>
       </div>`;
     avatarWrap.style.display = '';
   } else {
@@ -203,6 +206,40 @@ function toggleUserMenu() {
   const menu = document.getElementById('userMenu');
   if (menu) menu.style.display = menu.style.display === 'none' ? '' : 'none';
 }
+
+// ─── Apagar conta ────────────────────────────────────────────────────────────
+
+function openDeleteAccountModal() {
+  const menu = document.getElementById('userMenu');
+  if (menu) menu.style.display = 'none';
+  document.getElementById('deleteAccountModal').classList.add('open');
+  document.getElementById('deleteAccountPassword').value = '';
+  document.getElementById('deleteAccountError').textContent = '';
+  setTimeout(() => document.getElementById('deleteAccountPassword').focus(), 100);
+}
+
+function closeDeleteAccountModal() {
+  document.getElementById('deleteAccountModal').classList.remove('open');
+}
+
+async function submitDeleteAccount() {
+  const password = document.getElementById('deleteAccountPassword').value;
+  const errEl = document.getElementById('deleteAccountError');
+  if (!password) { errEl.textContent = 'Digite sua senha.'; return; }
+
+  const email = `${currentUser.username}@humaniadas.com`;
+  const { error: authError } = await db.auth.signInWithPassword({ email, password });
+  if (authError) { errEl.textContent = 'Senha incorreta.'; return; }
+
+  await db.from('simulations').delete().eq('user_id', currentUser.id);
+  await db.from('profiles').delete().eq('id', currentUser.id);
+  await db.auth.signOut();
+  window.location.replace(location.pathname);
+}
+
+document.getElementById('deleteAccountModal').addEventListener('click', function(e) {
+  if (e.target === this) closeDeleteAccountModal();
+});
 
 // Fecha menu ao clicar fora
 document.addEventListener('click', function(e) {

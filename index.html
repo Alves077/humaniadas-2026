@@ -74,6 +74,21 @@
     </div>
   </div>
 
+  <!-- Modal apagar conta -->
+  <div class="modal-overlay" id="deleteAccountModal">
+    <div class="modal">
+      <div class="modal-icon">⚠️</div>
+      <h2 class="modal-title">Apagar conta</h2>
+      <p class="modal-sub">Ação irreversível. Seus dados e simulações serão deletados permanentemente.</p>
+      <input type="password" id="deleteAccountPassword" class="modal-input" placeholder="Confirme sua senha" onkeydown="if(event.key==='Enter') submitDeleteAccount()">
+      <div class="modal-error" id="deleteAccountError"></div>
+      <div class="modal-actions">
+        <button class="modal-btn cancel" onclick="closeDeleteAccountModal()">Cancelar</button>
+        <button class="modal-btn confirm" style="background:var(--danger);border-color:var(--danger);" onclick="submitDeleteAccount()">Apagar</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Modal de login admin -->
   <div class="modal-overlay" id="adminModal">
     <div class="modal">
@@ -147,7 +162,13 @@
     <section class="view active" id="view-geral">
       <div class="view-header">
         <h1 class="view-title">Classificação Geral</h1>
-        <div class="progress-pill" id="progressPill"></div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div class="progress-pill" id="progressPill"></div>
+          <button class="export-btn" onclick="exportRanking()" title="Exportar ranking como imagem">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Exportar
+          </button>
+        </div>
       </div>
       <div class="podium-row" id="podiumRow"></div>
       <div class="table-wrap">
@@ -161,7 +182,7 @@
     </section>
 
     <!-- EXPORT CANVAS (hidden, used for image generation) -->
-    <div id="exportCanvas" style="position:fixed;left:-9999px;top:0;width:640px;background:#080c10;padding:32px;font-family:Inter,system-ui,sans-serif;"></div>
+    <div id="exportCanvas" style="position:fixed;left:-9999px;top:0;width:640px;background:#F4F4F6;padding:32px;font-family:Inter,system-ui,sans-serif;"></div>
 
     <!-- CHAVEAMENTOS HUB -->
     <section class="view" id="view-chaveamentos">
@@ -170,7 +191,10 @@
           <h1 class="view-title">Chaveamentos</h1>
           <p class="view-sub">Selecione um esporte para ver os resultados</p>
         </div>
-        <div class="progress-pill" id="sportsProgressPill"></div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div class="progress-pill" id="sportsProgressPill"></div>
+          <button class="clear-btn" id="clearAllBracketsBtn" onclick="clearAllBrackets()" style="display:none;">🗑 Limpar tudo</button>
+        </div>
       </div>
       <div class="gender-toggle" id="genderToggle">
         <button class="gtab active" data-g="masc" onclick="setGenderFilter('masc')">Masculino</button>

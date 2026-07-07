@@ -66,7 +66,9 @@ function updateAdminUI() {
     if (authBtn) authBtn.style.display = '';
   }
   const clearBtn = document.getElementById('clearBracketBtn');
-  if (clearBtn) clearBtn.style.visibility = isAdmin ? 'visible' : 'hidden';
+  if (clearBtn) clearBtn.style.visibility = canEditBrackets() ? 'visible' : 'hidden';
+  const clearAllBtn = document.getElementById('clearAllBracketsBtn');
+  if (clearAllBtn) clearAllBtn.style.display = canEditBrackets() ? '' : 'none';
 }
 
 document.getElementById('adminModal').addEventListener('click', function(e) {
