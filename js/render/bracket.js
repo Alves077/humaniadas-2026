@@ -9,7 +9,7 @@ window.__handleSelect = function(sel) {
 function bSlot(team, winner) {
   if (!team) return `<div class="b-slot empty"><span class="b-slot-name">—</span></div>`;
   const isWin = winner && winner === team;
-  return `<div class="b-slot ${isWin ? 'winner' : ''}">${teamAvatar(team, 22)}<span class="b-slot-name">${team}</span></div>`;
+  return `<div class="b-slot ${isWin ? 'winner' : ''}">${teamAvatar(team, 22)}<span class="b-slot-name">${escHtml(team)}</span></div>`;
 }
 
 function bSelectOrResult(slots, current, id) {
@@ -17,11 +17,11 @@ function bSelectOrResult(slots, current, id) {
   const canEdit = isAdmin || (!!currentUser && !viewingOfficial);
   if (!canEdit) {
     if (!valid.length) return `<div class="b-awaiting">—</div>`;
-    if (current) return `<div class="b-result">✓ ${current}</div>`;
+    if (current) return `<div class="b-result">✓ ${escHtml(current)}</div>`;
     return `<div class="b-awaiting">Aguardando…</div>`;
   }
   if (valid.length < 2) return `<div class="b-awaiting">aguardando rodada anterior…</div>`;
-  const opts = valid.map(t => `<option value="${t}" ${t===current?'selected':''}>${t}</option>`).join('');
+  const opts = valid.map(t => `<option value="${escHtml(t)}" ${t===current?'selected':''}>${escHtml(t)}</option>`).join('');
   return `<select id="${id}" onchange="window.__handleSelect(this)">
     <option value="">(escolha)</option>${opts}
   </select>`;
@@ -121,7 +121,7 @@ let _bmActiveIdx = 0;
 function bSlotHint(team, winner, hint) {
   if (team) {
     const isWin = winner && winner === team;
-    return `<div class="b-slot ${isWin ? 'winner' : ''}">${teamAvatar(team, 22)}<span class="b-slot-name">${team}</span></div>`;
+    return `<div class="b-slot ${isWin ? 'winner' : ''}">${teamAvatar(team, 22)}<span class="b-slot-name">${escHtml(team)}</span></div>`;
   }
   return `<div class="b-slot empty"><span class="b-slot-name" style="font-style:normal;color:var(--text-dim);font-size:11px;">${hint}</span></div>`;
 }

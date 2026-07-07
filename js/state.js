@@ -214,8 +214,8 @@ function scheduleSimulationSave() {
 
 // ─── Atualiza o vencedor de um confronto e propaga cascata ───────────────────
 function setWinner(sportName, matchKey, team) {
-  if (viewingSimulacao) return;
   if (!isAdmin && !currentUser) return;
+  if (!isAdmin && viewingOfficial) return;
   state.brackets[sportName][matchKey] = team || null;
 
   const deps = {
@@ -237,8 +237,8 @@ function setWinner(sportName, matchKey, team) {
 
 // Atualiza colocação no cheerleading
 function setCheer(pos, team) {
-  if (viewingSimulacao) return;
   if (!isAdmin && !currentUser) return;
+  if (!isAdmin && viewingOfficial) return;
   state.cheer[pos] = team || null;
   renderAll();
   isAdmin ? scheduleSave() : scheduleSimulationSave();
@@ -246,6 +246,7 @@ function setCheer(pos, team) {
 
 // Zera tudo
 function resetAll() {
+  if (!isAdmin) return;
   if (!confirm('Isso vai zerar todos os resultados. Continuar?')) return;
   initState();
   currentSport = null;

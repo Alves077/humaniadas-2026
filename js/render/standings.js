@@ -29,7 +29,7 @@ function renderGeral() {
       return `<div class="podium-card ${cls[i]}">
         <div class="podium-rank">${labels[i]}</div>
         <div class="podium-avatar">${teamAvatar(r.team, 48)}</div>
-        <div class="podium-team">${r.team}</div>
+        <div class="podium-team">${escHtml(r.team)}</div>
         <div class="podium-pts"><b>${r.total}</b> pts</div>
         <div class="medal-bar"></div>
       </div>`;
@@ -48,7 +48,7 @@ function renderGeral() {
     }).join('');
     return `<tr>
       <td class="rank rank-col">${anyPoints ? r.position : '–'}</td>
-      <td class="team-col">${teamAvatar(r.team, 24)} ${r.team}</td>
+      <td class="team-col">${teamAvatar(r.team, 24)} ${escHtml(r.team)}</td>
       ${cells}
       <td class="${r.cheer === 0 ? 'zero' : ''}">${r.cheer || '–'}</td>
       <td class="total total-col">${r.total}</td>

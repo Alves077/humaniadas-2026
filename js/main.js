@@ -57,7 +57,7 @@ function openBracket(sportName) {
 }
 
 function clearBracket() {
-  if (!currentSport) return;
+  if (!isAdmin || !currentSport) return;
   if (!confirm(`Limpar todos os resultados de ${currentSport}?`)) return;
   state.brackets[currentSport] = {};
   saveState();
@@ -95,7 +95,7 @@ async function exportRanking() {
       <div style="width:56px;height:56px;border-radius:50%;overflow:hidden;margin:0 auto 10px;background:${color};display:flex;align-items:center;justify-content:center;">
         ${r ? `<img src="img/teams/${slug}.png" width="56" height="56" style="object-fit:cover;" onerror="this.style.display='none'">` : ''}
       </div>
-      <div style="font-size:${i===0?'17px':'14px'};font-weight:700;color:${podiumColors[i] || '#e8eef2'};margin-bottom:4px;">${r ? r.team : '—'}</div>
+      <div style="font-size:${i===0?'17px':'14px'};font-weight:700;color:${podiumColors[i] || '#e8eef2'};margin-bottom:4px;">${r ? escHtml(r.team) : '—'}</div>
       <div style="font-size:13px;color:#6a808e;">${r && anyPoints ? r.total + ' pts' : ''}</div>
     </div>`;
   }).join('');
@@ -112,7 +112,7 @@ async function exportRanking() {
           <div style="width:28px;height:28px;border-radius:50%;overflow:hidden;background:${color};flex-shrink:0;">
             <img src="img/teams/${slug}.png" width="28" height="28" style="object-fit:cover;" onerror="this.style.display='none'">
           </div>
-          <span style="font-size:14px;font-weight:600;color:#e8eef2;">${r.team}</span>
+          <span style="font-size:14px;font-weight:600;color:#e8eef2;">${escHtml(r.team)}</span>
         </div>
       </td>
       <td style="padding:9px 12px;font-size:14px;font-weight:700;color:#f0c040;text-align:right;">${r.total} pts</td>

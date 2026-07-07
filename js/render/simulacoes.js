@@ -1,7 +1,5 @@
 /* ---------- Simulações de Terceiros ---------- */
 
-var viewingSimulacao = null; // mantido para os guards em state.js (sempre null agora)
-
 let allSimulations = [];
 let simFilter      = 'todas';
 let openDetailId   = null;
@@ -48,9 +46,10 @@ function computeStandingsFrom(brackets, cheer) {
 // ─── Tabela completa de detalhe ───────────────────────────────────────────────
 
 function simDetailTable(sim) {
-  const color     = TEAM_COLORS[sim.atletica] || '#888888';
-  const rgb       = hexToRgb(color);
-  const textColor = TEAM_TEXT_COLORS[sim.atletica] || 'var(--text)';
+  const color       = TEAM_COLORS[sim.atletica] || '#888888';
+  const rgb         = hexToRgb(color);
+  const textColor   = TEAM_TEXT_COLORS[sim.atletica] || 'var(--text)';
+  const headerColor = TEAM_PALETTES[sim.atletica]?.themeAccent || color;
 
   if (!sim.brackets && !sim.cheer) {
     return '<p class="sim-empty" style="padding:10px 14px 8px;">Sem simulação registrada.</p>';
@@ -59,7 +58,7 @@ function simDetailTable(sim) {
   const standings = computeStandingsFrom(sim.brackets, sim.cheer);
   const anyPoints = standings.some(r => r.total > 0);
 
-  const thS  = `style="color:var(--accent);"`;
+  const thS  = `style="color:${headerColor};"`;
   const head =
     `<th class="rank-col" ${thS}>Pos</th><th class="team-col" ${thS}>Time</th>` +
     SPORT_NAMES.map(s => `<th title="${s}" ${thS}>${abbreviate(s)}</th>`).join('') +
@@ -92,7 +91,7 @@ function simDetailTable(sim) {
 
     return `<tr ${rowStyle}>
       <td class="rank rank-col" ${posS}>${anyPoints ? r.position : '–'}</td>
-      <td class="team-col" ${teamS}>${teamAvatar(r.team, 22)} ${r.team}</td>
+      <td class="team-col" ${teamS}>${teamAvatar(r.team, 22)} ${escHtml(r.team)}</td>
       ${cells}
       <td class="${r.cheer === 0 ? 'zero' : ''}" ${cheerS}>${r.cheer || '–'}</td>
       <td class="total total-col" ${totS}>${r.total}</td>
@@ -130,7 +129,7 @@ function simUserCard(sim) {
       onclick="toggleSimDetail('${uid}')">
       ${teamAvatar(sim.atletica, 34)}
       <div class="sim-user-info">
-        <div class="sim-user-name">${sim.username || '—'}</div>
+        <div class="sim-user-name">${escHtml(sim.username) || '—'}</div>
         <div class="sim-user-sub">${sub}</div>
       </div>
       <div class="sim-sport-dots" aria-hidden="true">${dots}</div>
@@ -205,14 +204,22 @@ function renderSimulacoes() {
     filterEl.innerHTML =
       `<div class="sim-pills">` +
       `<button class="sim-pill ${simFilter === 'todas' ? 'active' : ''}" onclick="setSimFilter('todas')">Todas as Atléticas</button>` +
-      atleticas.map(a =>
-        `<button class="sim-pill ${simFilter === a ? 'active' : ''}" onclick="setSimFilter('${a.replace(/'/g, "\\'")}')">${a}</button>`
-      ).join('') +
+      atleticas.map(a => {
+        const ea = escHtml(a);
+        return `<button class="sim-pill ${simFilter === a ? 'active' : ''}" data-atletica="${ea}">${ea}</button>`;
+      }).join('') +
       `</div>` +
-      `<select class="sim-filter-select cheer-select" onchange="setSimFilter(this.value)">
+      `<select class="sim-filter-select cheer-select" id="simFilterSelect">
         <option value="todas" ${simFilter === 'todas' ? 'selected' : ''}>Todas as Atléticas</option>
-        ${atleticas.map(a => `<option value="${a}" ${simFilter === a ? 'selected' : ''}>${a}</option>`).join('')}
+        ${atleticas.map(a => { const ea = escHtml(a); return `<option value="${ea}" ${simFilter === a ? 'selected' : ''}>${ea}</option>`; }).join('')}
       </select>`;
+
+    filterEl.querySelector('#simFilterSelect')
+      ?.addEventListener('change', e => setSimFilter(e.target.value));
+    filterEl.querySelectorAll('.sim-pill[data-atletica]').forEach(btn =>
+      btn.addEventListener('click', () => setSimFilter(btn.dataset.atletica)));
+    filterEl.querySelector('.sim-pill:not([data-atletica])')
+      ?.addEventListener('click', () => setSimFilter('todas'));
   }
 
   const list = simFilter === 'todas'
@@ -234,7 +241,7 @@ function renderSimulacoes() {
     .sort(([a], [b]) => a.localeCompare(b, 'pt'))
     .map(([atletica, users]) =>
       `<div class="sim-group">
-        <div class="sim-group-label">${atletica}</div>
+        <div class="sim-group-label">${escHtml(atletica)}</div>
         <div class="sim-group-cards">${users.map(simUserCard).join('')}</div>
       </div>`
     ).join('');

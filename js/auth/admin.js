@@ -1,4 +1,4 @@
-let isAdmin = !DB_READY || false;
+let isAdmin = false;
 
 function handleAdminToggle() {
   if (isAdmin) logoutAdmin();
@@ -31,6 +31,13 @@ async function submitAdminLogin() {
     return;
   }
 
+  if (!data.user?.app_metadata?.is_admin) {
+    const err = document.getElementById('adminError');
+    err.textContent = 'Acesso negado.';
+    setTimeout(() => err.textContent = '', 2500);
+    await db.auth.signOut();
+    return;
+  }
   isAdmin = true;
   closeAdminModal();
   window.location.replace(location.pathname);

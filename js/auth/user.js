@@ -177,14 +177,14 @@ function updateAuthUI() {
     // Usuário comum logado: mostra avatar, esconde entrar e botão admin
     authBtn.style.display = 'none';
     adminBtn.style.display = 'none';
-    const initials = currentUser.username.slice(0, 2).toUpperCase();
+    const initials = escHtml(currentUser.username.slice(0, 2).toUpperCase());
     avatarWrap.innerHTML = `
       <div class="user-avatar" onclick="toggleUserMenu()">
         <span class="user-avatar-initials">${initials}</span>
       </div>
       <div class="user-menu" id="userMenu" style="display:none;">
-        <div class="user-menu-name">${currentUser.username}</div>
-        <div class="user-menu-sub">${currentUser.atletica}</div>
+        <div class="user-menu-name">${escHtml(currentUser.username)}</div>
+        <div class="user-menu-sub">${escHtml(currentUser.atletica)}</div>
         <hr class="user-menu-sep">
         <button class="user-menu-btn" onclick="logoutUser()">Sair</button>
       </div>`;
