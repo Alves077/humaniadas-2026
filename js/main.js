@@ -3,27 +3,50 @@ let currentSport = null;
 function toggleMobileMenu() {
   document.getElementById('burgerBtn').classList.toggle('open');
   document.getElementById('mobileNav').classList.toggle('open');
+  document.getElementById('navBackdrop').classList.toggle('open');
 }
 
 function mobileNavTo(view) {
   showView(view);
+  if (view === 'simulacoes') onSimulacoesEnter();
   document.getElementById('burgerBtn').classList.remove('open');
   document.getElementById('mobileNav').classList.remove('open');
-  // sync active state on mobile tabs
-  document.querySelectorAll('.mobile-tab').forEach(b =>
-    b.classList.toggle('active', b.dataset.view === view));
+  document.getElementById('navBackdrop').classList.remove('open');
 }
 
 function showView(name) {
   document.querySelectorAll('section.view').forEach(s => s.classList.remove('active'));
   document.getElementById('view-' + name).classList.add('active');
 
-  const activeDesktop = name === 'bracket' ? 'chaveamentos' : name;
+  const activeTab = name === 'bracket' ? 'chaveamentos' : name;
   document.querySelectorAll('.tab[data-view]').forEach(b =>
-    b.classList.toggle('active', b.dataset.view === activeDesktop));
+    b.classList.toggle('active', b.dataset.view === activeTab));
   document.querySelectorAll('.mobile-tab[data-view]').forEach(b =>
-    b.classList.toggle('active', b.dataset.view === activeDesktop));
+    b.classList.toggle('active', b.dataset.view === activeTab));
+
+  if (location.hash !== '#' + name) history.pushState(null, '', '#' + name);
+
+  const toggle = document.getElementById('viewToggle');
+  if (toggle) {
+    toggle.style.display = (name === 'simulacoes' || !currentUser) ? 'none' : '';
+  }
 }
+
+const VALID_VIEWS = ['geral', 'chaveamentos', 'cheerleading', 'simulacoes', 'bracket'];
+
+function resolveHash() {
+  const view = location.hash.slice(1) || 'geral';
+  if (!VALID_VIEWS.includes(view)) { showView('geral'); return; }
+  if (view === 'bracket') {
+    if (currentSport) { showView('bracket'); renderBracket(); }
+    else showView('chaveamentos');
+    return;
+  }
+  showView(view);
+  if (view === 'simulacoes') onSimulacoesEnter();
+}
+
+window.addEventListener('popstate', resolveHash);
 
 function openBracket(sportName) {
   currentSport = sportName;
@@ -42,12 +65,17 @@ function clearBracket() {
 }
 
 document.querySelectorAll('.tab[data-view]').forEach(btn => {
-  btn.addEventListener('click', () => showView(btn.dataset.view));
+  btn.addEventListener('click', () => {
+    showView(btn.dataset.view);
+    if (btn.dataset.view === 'simulacoes') onSimulacoesEnter();
+  });
 });
 
 renderAll();
+resolveHash();
 hideLoadingScreen();
 loadState().then(() => renderAll()).catch(() => {});
+initAuth().catch(() => {});
 
 async function exportRanking() {
   const standings = computeGeneralStandings();

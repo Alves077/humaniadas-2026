@@ -1,0 +1,161 @@
+/* ===================== SIMULAÇÕES ===================== */
+
+/* ── Filter: pills (desktop) + select (mobile) ── */
+.sim-filter { margin-bottom: 20px; }
+
+.sim-pills {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.sim-filter-select { display: none; }
+
+.sim-pill {
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  color: var(--text-dim);
+  font-size: 12px;
+  padding: 5px 14px;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: var(--font-body);
+  white-space: nowrap;
+}
+.sim-pill:hover { color: var(--text); border-color: var(--accent); }
+.sim-pill.active {
+  background: var(--accent-dim);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ── Grupos de atlética ── */
+.sim-group { margin-bottom: 24px; }
+.sim-group-label {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 8px;
+  padding-left: 4px;
+  cursor: default;
+  user-select: none;
+}
+.sim-group-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* ── Entry: card + painel expansível ── */
+.sim-entry { display: flex; flex-direction: column; }
+
+/* ── Card de usuário — full-width row ── */
+.sim-user-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 10px 16px 10px 12px;
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  border-left-width: 3px;
+  cursor: pointer;
+  text-align: left;
+  transition: box-shadow 0.12s, border-radius 0.1s;
+  font-family: var(--font-body);
+}
+.sim-user-card:hover { box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08); }
+.sim-user-card.open  {
+  border-radius: var(--radius) var(--radius) 0 0;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06);
+}
+
+.sim-user-info { flex: 0 0 auto; min-width: 160px; max-width: 220px; }
+.sim-user-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sim-user-sub {
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-top: 2px;
+}
+
+/* ── Sport completion dots ── */
+.sim-sport-dots {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: wrap;
+  padding: 0 8px;
+}
+.sim-sport-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--line);
+  flex-shrink: 0;
+  transition: background 0.15s;
+}
+.sim-sport-dot.filled { background: var(--accent); opacity: 0.85; }
+
+/* ── Seta de expansão ── */
+.sim-user-arrow {
+  font-size: 20px;
+  color: var(--text-dim);
+  flex-shrink: 0;
+  line-height: 1;
+  transition: transform 0.18s;
+  display: inline-block;
+}
+.sim-user-arrow.open { transform: rotate(90deg); }
+
+/* ── Painel expandido ── */
+.sim-user-detail {
+  background: var(--bg-panel);
+  border: 1px solid var(--line);
+  border-left-width: 3px;
+  border-top: none;
+  border-radius: 0 var(--radius) var(--radius) var(--radius);
+  padding: 10px 0 4px;
+}
+
+/* ── Sem dados / login prompt ── */
+.sim-empty {
+  font-size: 14px;
+  color: var(--text-dim);
+  padding: 24px 0;
+}
+
+/* ── Scroll wrapper para a tabela wide ── */
+.sim-detail-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 0 14px 12px;
+}
+
+/* ── Tabela de detalhe: herda standings, mas remove sticky ── */
+.sim-detail-table { white-space: nowrap; }
+.sim-detail-scroll table.standings td.team-col,
+.sim-detail-scroll table.standings th.team-col {
+  position: static;
+  background: transparent;
+  text-align: center;
+}
+
+/* ===================== RESPONSIVE ===================== */
+@media (max-width: 720px) {
+  .sim-user-card   { padding: 10px 12px; }
+  .sim-sport-dots  { display: none; }
+  .sim-user-info   { max-width: none; flex: 1; }
+  .sim-pills       { display: none; }
+  .sim-filter-select { display: block; width: 100%; }
+}

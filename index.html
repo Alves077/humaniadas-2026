@@ -5,7 +5,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Humaniadas 2026</title>
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/podium.css">
+  <link rel="stylesheet" href="css/sports.css">
+  <link rel="stylesheet" href="css/bracket.css">
+  <link rel="stylesheet" href="css/cheerleading.css">
+  <link rel="stylesheet" href="css/simulacoes.css">
 </head>
 
 <body>
@@ -19,6 +27,50 @@
         <div class="loading-bar-fill"></div>
       </div>
       <div class="loading-label">Carregando resultados…</div>
+    </div>
+  </div>
+
+  <!-- Modal de login/cadastro usuário -->
+  <div class="modal-overlay" id="authModal">
+    <div class="modal">
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="authTabLogin" onclick="switchAuthTab('login')">Entrar</button>
+        <button class="auth-tab" id="authTabRegister" onclick="switchAuthTab('register')">Cadastrar</button>
+      </div>
+
+      <!-- Login -->
+      <div id="authFormLogin">
+        <input type="text" id="loginUsername" class="modal-input" placeholder="Usuário" style="margin-bottom:8px;"
+          onkeydown="if(event.key==='Enter') document.getElementById('loginPassword').focus()">
+        <input type="password" id="loginPassword" class="modal-input" placeholder="Senha"
+          onkeydown="if(event.key==='Enter') submitLogin()">
+      </div>
+
+      <!-- Cadastro -->
+      <div id="authFormRegister" style="display:none;">
+        <input type="text" id="regUsername" class="modal-input" placeholder="Usuário" style="margin-bottom:8px;"
+          onkeydown="if(event.key==='Enter') document.getElementById('regAtletica').focus()">
+        <select id="regAtletica" class="modal-input" style="margin-bottom:8px;">
+          <option value="">Selecione sua atlética</option>
+          <option>GPDES</option>
+          <option>SPUFF</option>
+          <option>PSICO UFRJ</option>
+          <option>PSICO PUC</option>
+          <option>GEMEL</option>
+          <option>AECS</option>
+          <option>RI UFF</option>
+          <option>HOTUR UFF</option>
+          <option>RI UFRJ</option>
+        </select>
+        <input type="password" id="regPassword" class="modal-input" placeholder="Senha (mín. 6 caracteres)"
+          onkeydown="if(event.key==='Enter') submitRegister()">
+      </div>
+
+      <div class="modal-error" id="authError"></div>
+      <div class="modal-actions">
+        <button class="modal-btn cancel" onclick="closeAuthModal()">Cancelar</button>
+        <button class="modal-btn confirm" id="authSubmitBtn" onclick="submitLogin()">Entrar</button>
+      </div>
     </div>
   </div>
 
@@ -53,10 +105,13 @@
         <button class="tab active" data-view="geral">🏆 Geral</button>
         <button class="tab" data-view="chaveamentos">🎯 Chaveamentos</button>
         <button class="tab" data-view="cheerleading">📣 Cheerleading</button>
+        <button class="tab" data-view="simulacoes">👥 Simulações</button>
       </nav>
 
       <div class="header-right">
         <div class="sync-status" id="syncStatus"></div>
+        <div class="user-avatar-wrap" id="userAvatar" style="display:none;"></div>
+        <button class="auth-btn" id="authBtn" onclick="openAuthModal('login')">Entrar</button>
         <button class="admin-toggle" id="adminToggleBtn" onclick="handleAdminToggle()">
           <span id="adminToggleIcon">🔒</span>
           <span id="adminToggleLabel">Admin</span>
@@ -67,13 +122,24 @@
       </div>
     </div>
 
-    <!-- Mobile nav drawer -->
-    <div class="mobile-nav" id="mobileNav">
-      <button class="mobile-tab" data-view="geral" onclick="mobileNavTo('geral')">🏆 Geral</button>
-      <button class="mobile-tab" data-view="chaveamentos" onclick="mobileNavTo('chaveamentos')">🎯 Chaveamentos</button>
-      <button class="mobile-tab" data-view="cheerleading" onclick="mobileNavTo('cheerleading')">📣 Cheerleading</button>
-    </div>
   </header>
+
+  <!-- Backdrop + nav mobile fora do header para evitar conflito com backdrop-filter/sticky -->
+  <div class="nav-backdrop" id="navBackdrop" onclick="toggleMobileMenu()"></div>
+  <div class="mobile-nav" id="mobileNav">
+    <button class="mobile-tab" data-view="geral" onclick="mobileNavTo('geral')">🏆 Geral</button>
+    <button class="mobile-tab" data-view="chaveamentos" onclick="mobileNavTo('chaveamentos')">🎯 Chaveamentos</button>
+    <button class="mobile-tab" data-view="cheerleading" onclick="mobileNavTo('cheerleading')">📣 Cheerleading</button>
+    <button class="mobile-tab" data-view="simulacoes" onclick="mobileNavTo('simulacoes')">👥 Simulações</button>
+  </div>
+
+  <!-- Toggle Oficial / Simulação (visível só para usuários logados) -->
+  <div class="view-toggle-bar" id="viewToggle" style="display:none;">
+    <div class="view-toggle-inner">
+      <button class="vtab" data-view="sim" onclick="switchView(false)">Minha Simulação</button>
+      <button class="vtab active" data-view="oficial" onclick="switchView(true)">Resultado Oficial</button>
+    </div>
+  </div>
 
   <div class="shell">
 
@@ -106,6 +172,10 @@
         </div>
         <div class="progress-pill" id="sportsProgressPill"></div>
       </div>
+      <div class="gender-toggle" id="genderToggle">
+        <button class="gtab active" data-g="masc" onclick="setGenderFilter('masc')">Masculino</button>
+        <button class="gtab" data-g="fem" onclick="setGenderFilter('fem')">Feminino</button>
+      </div>
       <div class="sport-grid" id="sportGrid"></div>
     </section>
 
@@ -127,6 +197,18 @@
         <h4 class="section-label">Colocação final</h4>
         <div id="bracketStandings"></div>
       </div>
+    </section>
+
+    <!-- SIMULAÇÕES -->
+    <section class="view" id="view-simulacoes">
+      <div class="view-header">
+        <div>
+          <h1 class="view-title">Simulações</h1>
+          <p class="view-sub">Veja como cada atlética simulou os chaveamentos</p>
+        </div>
+      </div>
+      <div class="sim-filter" id="simFilter"></div>
+      <div id="simulacoesGrid"></div>
     </section>
 
     <!-- CHEERLEADING -->
@@ -157,8 +239,15 @@
   <script src="js/data.js"></script>
   <script src="js/logic.js"></script>
   <script src="js/state.js"></script>
-  <script src="js/admin.js"></script>
-  <script src="js/render.js"></script>
+  <script src="js/auth/admin.js"></script>
+  <script src="js/auth/user.js"></script>
+  <script src="js/render/utils.js"></script>
+  <script src="js/render/standings.js"></script>
+  <script src="js/render/sports.js"></script>
+  <script src="js/render/bracket.js"></script>
+  <script src="js/render/cheer.js"></script>
+  <script src="js/render/simulacoes.js"></script>
+  <script src="js/render/index.js"></script>
   <script src="js/main.js"></script>
 </body>
 

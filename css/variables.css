@@ -1,0 +1,43 @@
+:root {
+  /* ── Superfícies ─────────────────────────────────────────── */
+  --bg:            #14100D;
+  --bg-panel:      #1A1208;
+  --bg-card:       #1E160E;
+  --bg-card-hover: #261C12;
+
+  /* ── Bordas ──────────────────────────────────────────────── */
+  --line:          rgba(200, 112, 42, 0.12);
+  --line-strong:   rgba(200, 112, 42, 0.22);
+
+  /* ── Pódio ───────────────────────────────────────────────── */
+  --gold:      #E09A4A;
+  --gold-dim:  #5A3A18;
+  --gold-glow: rgba(224, 154, 74, 0.10);
+  --silver:    #A0B4C8;
+  --bronze:    #9A5A2A;
+
+  /* ── Accent (cobre-terracota) ────────────────────────────── */
+  --accent:      #C8702A;
+  --accent-dim:  rgba(200, 112, 42, 0.10);
+  --accent-dark: #9E5518;
+
+  /* ── Tipografia ──────────────────────────────────────────── */
+  --text:     #F0E8DE;
+  --text-dim: #7A6050;
+  --text-mid: #B89A80;
+  --danger:   #E05545;
+
+  /* ── Fontes ──────────────────────────────────────────────── */
+  --font-display: "Oswald", "Arial Narrow", Arial, sans-serif;
+  --font-body:    "Inter", system-ui, Arial, sans-serif;
+  --font-mono:    "JetBrains Mono", "Consolas", monospace;
+
+  /* ── Layout ──────────────────────────────────────────────── */
+  /* ── Interativos ────────────────────────────────────────────── */
+  --border-input: rgba(240, 232, 222, 0.18); /* borda padrão de inputs e selects */
+
+  /* ── Layout ──────────────────────────────────────────────── */
+  --header-h: 58px;
+  --radius:   8px;
+  --radius-sm: 5px;
+}

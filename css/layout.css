@@ -1,0 +1,110 @@
+/* ===================== STICKY FOOTER ===================== */
+body {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+/* ===================== SHELL ===================== */
+.shell {
+  flex: 1;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 28px 24px 24px;
+  isolation: isolate;   /* stacking context z:0 — garante que conteúdo fique abaixo dos overlays fixos */
+}
+
+/* ===================== VIEWS ===================== */
+.view {
+  display: none;
+  animation: fadein 0.2s ease;
+}
+.view.active {
+  display: block;
+}
+
+@keyframes fadein {
+  from { opacity: 0; transform: translateY(5px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* ===================== VIEW HEADER ===================== */
+.view-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+.view-title {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--text);
+}
+.view-sub {
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-top: 3px;
+}
+
+/* progress pill */
+.progress-pill {
+  font-size: 12px;
+  color: var(--text-mid);
+  background: var(--bg-card);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 5px 13px;
+  white-space: nowrap;
+  align-self: center;
+  font-family: var(--font-mono);
+}
+.progress-pill span {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* ===================== FOOTER ===================== */
+.site-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 24px 16px;
+  margin-top: 40px;
+  border-top: 1px solid var(--line);
+  font-size: 12px;
+  color: var(--text-dim);
+  text-align: center;
+}
+.footer-logo {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+  opacity: 0.7;
+}
+
+/* ===================== RESPONSIVE ===================== */
+@media (max-width: 720px) {
+  .shell {
+    padding: 20px 16px 16px;  /* alinha horizontalmente com top-inner mobile */
+  }
+  .view-header {
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+    flex-wrap: nowrap;
+  }
+  .view-title {
+    font-size: 18px;
+    white-space: nowrap;
+  }
+  .progress-pill {
+    font-size: 10px;
+    padding: 4px 8px;
+  }
+}

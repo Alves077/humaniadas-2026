@@ -1,14 +1,90 @@
+// ─── Theming por atlética ────────────────────────────────────────────────────
+
+function _themeHexRgb(hex) {
+  if (!hex || hex.length < 7) return '200,112,42';
+  return [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16)).join(',');
+}
+
+function applyTeamTheme(atletica) {
+  const p      = TEAM_PALETTES[atletica];
+  if (!p) return;
+  const accent = p.themeAccent || p.accent || '#C8702A';
+  const gold   = p.gold        || accent;
+  const rgb    = _themeHexRgb(accent);
+  const rgbG   = _themeHexRgb(gold);
+  const r      = document.documentElement;
+  r.style.setProperty('--accent-rgb',    rgb);
+  r.style.setProperty('--bg',            p.bg          || '#14100D');
+  r.style.setProperty('--bg-panel',      p.bgPanel     || '#1A1208');
+  r.style.setProperty('--bg-card',       p.bgCard      || '#1E160E');
+  r.style.setProperty('--bg-card-hover', p.bgCardHover || '#261C12');
+  r.style.setProperty('--accent',        accent);
+  r.style.setProperty('--accent-dim',    `rgba(${rgb},0.10)`);
+  r.style.setProperty('--accent-dark',   p.accentDark  || accent);
+  r.style.setProperty('--line',          `rgba(${rgb},0.15)`);
+  r.style.setProperty('--line-strong',   `rgba(${rgb},0.28)`);
+  r.style.setProperty('--gold',          gold);
+  r.style.setProperty('--gold-dim',      p.goldDim     || `rgba(${rgbG},0.15)`);
+  r.style.setProperty('--gold-glow',     `rgba(${rgbG},0.18)`);
+  r.style.setProperty('--text-dim',      p.textDim     || '#7A6050');
+  r.style.setProperty('--text-mid',      p.textMid     || '#B89A80');
+}
+
+function resetTeamTheme() {
+  ['--accent-rgb',
+   '--bg', '--bg-panel', '--bg-card', '--bg-card-hover',
+   '--accent', '--accent-dim', '--accent-dark', '--line', '--line-strong',
+   '--gold', '--gold-dim', '--gold-glow', '--text-dim', '--text-mid']
+    .forEach(v => document.documentElement.style.removeProperty(v));
+}
+
+// ─── Estado em memória ───────────────────────────────────────────────────────
+
 // Estado em memória
 const state = { brackets: {}, cheer: {} };
+// Cópia do estado oficial sempre em memória
+const officialState = { brackets: {}, cheer: {} };
+// true = usuário está vendo o oficial, false = vendo a própria simulação
+let viewingOfficial = false;
 
-function initState() {
+function initState(target = state) {
   SPORT_NAMES.forEach(s => {
-    state.brackets[s] = { r1: null, r2a: null, r2b: null, r2c: null, r2d: null, r3a: null, r3b: null, final: null };
+    target.brackets[s] = { r1: null, r2a: null, r2b: null, r2c: null, r2d: null, r3a: null, r3b: null, final: null };
   });
-  for (let i = 1; i <= 9; i++) state.cheer[i] = null;
+  for (let i = 1; i <= 9; i++) target.cheer[i] = null;
+}
+
+function switchView(official) {
+  viewingOfficial = official;
+  if (official) {
+    // Copia estado oficial para state (read-only para usuário comum)
+    SPORT_NAMES.forEach(s => {
+      state.brackets[s] = { ...officialState.brackets[s] };
+    });
+    Object.keys(officialState.cheer).forEach(k => {
+      state.cheer[k] = officialState.cheer[k];
+    });
+  } else {
+    updateViewToggleUI();
+    loadSimulation().then(() => renderAll());
+    return;
+  }
+  renderAll();
+  updateViewToggleUI();
+}
+
+function updateViewToggleUI() {
+  const toggle = document.getElementById('viewToggle');
+  if (!toggle) return;
+  const onSimulacoes = location.hash === '#simulacoes';
+  toggle.style.display = (currentUser && !onSimulacoes) ? '' : 'none';
+  toggle.querySelectorAll('.vtab').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.view === (viewingOfficial ? 'oficial' : 'sim'));
+  });
 }
 
 initState();
+initState(officialState);
 
 // Cliente Supabase — só inicializa se as credenciais forem reais
 const DB_READY = !SUPABASE_URL.includes('SEU_PROJECT_ID') && !SUPABASE_ANON_KEY.includes('SUA_ANON');
@@ -47,12 +123,16 @@ async function loadState() {
       const saved = data.state;
       if (saved.brackets) {
         SPORT_NAMES.forEach(s => {
-          if (saved.brackets[s]) state.brackets[s] = { ...state.brackets[s], ...saved.brackets[s] };
+          if (saved.brackets[s]) {
+            state.brackets[s] = { ...state.brackets[s], ...saved.brackets[s] };
+            officialState.brackets[s] = { ...state.brackets[s] };
+          }
         });
       }
       if (saved.cheer) {
         Object.entries(saved.cheer).forEach(([pos, team]) => {
           state.cheer[Number(pos)] = team;
+          officialState.cheer[Number(pos)] = team;
         });
       }
     }
@@ -85,9 +165,57 @@ async function saveState() {
   }
 }
 
-// Atualiza o vencedor de um confronto e propaga cascata
+// ─── Simulação do usuário ─────────────────────────────────────────────────────
+
+async function loadSimulation() {
+  if (!DB_READY || !currentUser) return;
+  const { data } = await db
+    .from('simulations')
+    .select('brackets, cheer')
+    .eq('user_id', currentUser.id)
+    .single();
+
+  initState();
+  if (data) {
+    if (data.brackets) {
+      SPORT_NAMES.forEach(s => {
+        if (data.brackets[s]) state.brackets[s] = { ...state.brackets[s], ...data.brackets[s] };
+      });
+    }
+    if (data.cheer) {
+      Object.entries(data.cheer).forEach(([pos, team]) => {
+        state.cheer[Number(pos)] = team;
+      });
+    }
+  }
+}
+
+async function saveSimulation() {
+  if (!DB_READY || !currentUser) return;
+  setSyncStatus('Salvando…', 'saving');
+  try {
+    const { error } = await db
+      .from('simulations')
+      .upsert({ user_id: currentUser.id, brackets: state.brackets, cheer: state.cheer, updated_at: new Date().toISOString() });
+    if (error) throw error;
+    setSyncStatus('Salvo ✓');
+    setTimeout(() => setSyncStatus(''), 2000);
+  } catch (e) {
+    setSyncStatus('Erro ao salvar', 'error');
+  }
+}
+
+function scheduleSimulationSave() {
+  if (!DB_READY || !currentUser) return;
+  clearTimeout(saveTimeout);
+  setSyncStatus('Salvando…', 'saving');
+  saveTimeout = setTimeout(saveSimulation, 800);
+}
+
+// ─── Atualiza o vencedor de um confronto e propaga cascata ───────────────────
 function setWinner(sportName, matchKey, team) {
-  if (!isAdmin) return;
+  if (viewingSimulacao) return;
+  if (!isAdmin && !currentUser) return;
   state.brackets[sportName][matchKey] = team || null;
 
   const deps = {
@@ -104,15 +232,16 @@ function setWinner(sportName, matchKey, team) {
   cascade(matchKey);
 
   renderAll();
-  scheduleSave();
+  isAdmin ? scheduleSave() : scheduleSimulationSave();
 }
 
 // Atualiza colocação no cheerleading
 function setCheer(pos, team) {
-  if (!isAdmin) return;
+  if (viewingSimulacao) return;
+  if (!isAdmin && !currentUser) return;
   state.cheer[pos] = team || null;
   renderAll();
-  scheduleSave();
+  isAdmin ? scheduleSave() : scheduleSimulationSave();
 }
 
 // Zera tudo

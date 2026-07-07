@@ -1,0 +1,183 @@
+/* ===================== SPORT GRID ===================== */
+#sportGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.sg-row {
+  display: grid;
+  grid-template-columns: 120px 1fr 1fr;
+  gap: 8px;
+  align-items: stretch;
+}
+.sg-label {
+  display: flex;
+  align-items: center;
+  font-family: var(--font-display);
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  padding-right: 8px;
+  border-right: 1px solid var(--line);
+}
+.sg-card      { display: flex; }
+.sg-card .sport-card { flex: 1; }
+.sg-card-full { grid-column: 2 / 4; display: flex; }
+.sg-card-full .sport-card { flex: 1; }
+
+/* ===================== SPORT CARD ===================== */
+.sport-card {
+  background: var(--bg-card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 9px 14px;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, opacity 0.15s;
+  text-align: left;
+  width: 100%;
+}
+.sport-card:hover {
+  border-color: var(--accent);
+  background: var(--bg-card-hover);
+}
+
+/* ── Ênfase relativa por progresso ─────────────────────────────
+   Quanto mais rodadas preenchidas, maior o "peso" visual do card.
+   Cards vazios ficam ligeiramente apagados (esperando).
+   Cards avançados ficam com fundo mais quente e legíveis.         */
+.sport-card[data-fill="0"] { opacity: 0.42; }
+
+/* data-fill 1-2: padrão — sem alteração extra */
+
+.sport-card[data-fill="3"],
+.sport-card[data-fill="4"],
+.sport-card[data-fill="5"] {
+  background: var(--bg-card-hover);
+}
+.sport-card[data-fill="6"],
+.sport-card[data-fill="7"] {
+  background: var(--bg-card-hover);
+  border-color: var(--line-strong);
+}
+
+/* Concluído: borda esquerda sólida como hierarquia máxima */
+.sport-card.done {
+  background: var(--bg-card-hover);
+  border-color: var(--gold-dim);
+  border-left: 4px solid var(--gold);
+  box-shadow: 0 0 28px var(--gold-glow), inset 0 0 0 1px var(--gold-glow);
+  opacity: 1;
+}
+.sport-card.done:hover { border-color: var(--gold); }
+
+/* card-top: só o badge (emoji removido) */
+.sport-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-bottom: 5px;
+}
+
+/* Badge redesenhado: ponto indicador + texto, sem pill/borda */
+.sport-badge {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.sport-badge::before {
+  content: '';
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--text-dim);
+  flex-shrink: 0;
+}
+.sport-badge.done          { color: var(--gold); }
+.sport-badge.done::before  { background: var(--gold); }
+
+.sport-name {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 2px;
+}
+.sport-champ   { font-size: 12px; color: var(--text-dim); }
+.sport-champ b { color: var(--gold); font-weight: 600; }
+
+/* ── Barra de placar única ───────────────────────────────────────
+   Substitui os dots separados: uma barra contínua que cresce
+   proporcionalmente à quantidade de resultados registrados.
+   Accent (cobre) → progresso; gold (âmbar) → campeão definido.   */
+.sport-progress {
+  margin-top: 7px;
+  height: 3px;
+  background: var(--line-strong);
+  border-radius: 2px;
+  position: relative;
+  overflow: hidden;
+}
+.sport-progress-fill {
+  position: absolute;
+  top: 0; left: 0;
+  height: 100%;
+  background: var(--accent);
+  border-radius: 2px;
+  transition: width 0.4s ease;
+  min-width: 0;
+}
+.sport-progress-fill.gold { background: var(--gold); }
+
+/* ===================== GENDER TOGGLE ===================== */
+/* Oculto no desktop; exibido apenas no mobile via media query */
+.gender-toggle { display: none; }
+
+.gtab {
+  padding: 6px 20px;
+  border-radius: calc(var(--radius) - 2px);
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  border: none;
+  background: transparent;
+}
+.gtab:hover { color: var(--text); }
+.gtab.active {
+  background: var(--accent-dim);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* ===================== RESPONSIVE ===================== */
+@media (max-width: 720px) {
+  .gender-toggle {
+    display: inline-flex;
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 3px;
+    gap: 2px;
+    margin-bottom: 14px;
+  }
+
+  /* 72px garante que "FUTEBOL 7" caiba em uma linha */
+  .sg-row   { grid-template-columns: 72px 1fr 1fr; gap: 5px; }
+  .sg-label { font-size: 9px; letter-spacing: 0.5px; }
+  #sportGrid { gap: 4px; }
+  .sport-card     { padding: 8px 10px; }
+  .sport-card-top { margin-bottom: 4px; }
+  .sport-badge    { font-size: 8px; }
+  .sport-name     { font-size: 12px; margin-bottom: 2px; }
+  .sport-champ    { font-size: 10px; }
+  .sport-progress { margin-top: 6px; }
+}

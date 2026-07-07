@@ -16,14 +16,17 @@ create policy "leitura publica"
   on championship_state for select
   using (true);
 
--- Remove policy antiga se existir e recria restrita a autenticados
+-- Remove policies antigas e recria restrita ao admin (app_metadata.is_admin = true)
+-- IMPORTANTE: antes de rodar, adicione {"is_admin": true} no app_metadata do usuário
+-- admin em Authentication > Users no painel do Supabase
 drop policy if exists "escrita publica" on championship_state;
 drop policy if exists "escrita autenticada" on championship_state;
+drop policy if exists "escrita apenas admin" on championship_state;
 
-create policy "escrita autenticada"
+create policy "escrita apenas admin"
   on championship_state for all
-  using (auth.role() = 'authenticated')
-  with check (auth.role() = 'authenticated');
+  using ((auth.jwt() -> 'app_metadata' ->> 'is_admin')::boolean = true)
+  with check ((auth.jwt() -> 'app_metadata' ->> 'is_admin')::boolean = true);
 
 
 -- ─── profiles ─────────────────────────────────────────────────────────────────

@@ -11,16 +11,174 @@ const TEAMS = [
 ];
 
 // Arquivo de logo em img/teams/<key>.png — adicione o arquivo e aparece automaticamente
+// Cor primária usada em bordas, tints de thead e cards na aba Simulações
 const TEAM_COLORS = {
-  GPDES: "#c0541a",
-  SPUFF: "#1a6fc0",
-  "PSICO UFRJ": "#1a6fc0",
-  "PSICO PUC": "#1a8c3a",
-  GEMEL: "#8c1a1a",
-  AECS: "#7a1a8c",
-  "RI UFF": "#c0a01a",
-  "HOTUR UFF": "#1a8c8c",
-  "RI UFRJ": "#1a6fc0",
+  GPDES:        "#e56423",
+  SPUFF:        "#5a3cb3",
+  "PSICO UFRJ": "#32114e",
+  "PSICO PUC":  "#c00100",
+  GEMEL:        "#d7093a",
+  AECS:         "#d7ae26",
+  "RI UFF":     "#ffe700",
+  "HOTUR UFF":  "#020684",
+  "RI UFRJ":    "#003374",
+};
+
+// Cor do texto usado sobre a linha destacada da atlética na tabela de simulação
+const TEAM_TEXT_COLORS = {
+  GPDES:        "#ffffff",
+  SPUFF:        "#ffdd00",
+  "PSICO UFRJ": "#a2d14a",
+  "PSICO PUC":  "#fe9b00",
+  GEMEL:        "#f4c123",
+  AECS:         "#feea75",
+  "RI UFF":     "#ffffff",
+  "HOTUR UFF":  "#ffffff",
+  "RI UFRJ":    "#c4c4c6",
+};
+
+// Paleta completa por atlética — usada no theming global do site
+// accent      = cor primária da atlética (usada em TEAM_COLORS: bordas, tints de cards)
+// themeAccent = cor usada como --accent no CSS (links, active states, destaque interativo)
+// accentDark  = variante escura do themeAccent (para --accent-dark)
+// bg/bgPanel/bgCard/bgCardHover = superfícies com temperatura de cor da atlética
+// text        = cor do texto destacado na linha da atlética na sim table
+const TEAM_PALETTES = {
+  SPUFF: {
+    bg:          "#0d0820",
+    bgPanel:     "#130e2c",
+    bgCard:      "#1a1438",
+    bgCardHover: "#221c45",
+    accent:      "#5a3cb3",
+    themeAccent: "#ffdd00",
+    accentDark:  "#c4aa00",
+    gold:        "#ffdd00",
+    goldDim:     "#332800",
+    textDim:     "#a090c8",   /* 6.8:1 no bg #0d0820 */
+    textMid:     "#cfc0e8",
+    text:        "#ffdd00",
+    aux:         ["#ffffff"],
+  },
+  "HOTUR UFF": {
+    bg:          "#020215",
+    bgPanel:     "#050832",
+    bgCard:      "#0a0d44",
+    bgCardHover: "#0f1256",
+    accent:      "#020684",
+    themeAccent: "#e8f0ff",
+    accentDark:  "#b0c8ff",
+    gold:        "#b0c8ff",
+    goldDim:     "#080e3a",
+    textDim:     "#8090d0",   /* 5.9:1 no bg #020215 */
+    textMid:     "#a8b8e0",
+    text:        "#ffffff",
+    aux:         ["#21201e"],
+  },
+  GPDES: {
+    bg:          "#0a1525",
+    bgPanel:     "#0f1c30",
+    bgCard:      "#142238",
+    bgCardHover: "#1a2a44",
+    accent:      "#e56423",
+    themeAccent: "#e56423",
+    accentDark:  "#b84e1a",
+    gold:        "#e56423",
+    goldDim:     "#2a1800",
+    textDim:     "#7090b8",   /* 5.2:1 no bg #0a1525 */
+    textMid:     "#98b0d0",
+    text:        "#ffffff",
+    aux:         ["#133163"],
+  },
+  GEMEL: {
+    bg:          "#140004",
+    bgPanel:     "#200008",
+    bgCard:      "#2a000c",
+    bgCardHover: "#340010",
+    accent:      "#d7093a",
+    themeAccent: "#f4c123",
+    accentDark:  "#c29b1c",
+    gold:        "#f4c123",
+    goldDim:     "#2e1e08",
+    textDim:     "#b88090",   /* 5.0:1 no bg #140004 */
+    textMid:     "#d0a0b0",
+    text:        "#f4c123",
+    aux:         ["#151419"],
+  },
+  "RI UFF": {
+    bg:          "#050500",
+    bgPanel:     "#090800",
+    bgCard:      "#0e0d00",
+    bgCardHover: "#141200",
+    accent:      "#ffe700",
+    themeAccent: "#ffe700",
+    accentDark:  "#c4b400",
+    gold:        "#ffe700",
+    goldDim:     "#282200",
+    textDim:     "#a09870",   /* 6.3:1 no bg #0c0b00 */
+    textMid:     "#c8c098",
+    text:        "#ffffff",
+    aux:         ["#1a1a1a"],
+  },
+  "PSICO UFRJ": {
+    bg:          "#0a0518",
+    bgPanel:     "#100b26",
+    bgCard:      "#160f32",
+    bgCardHover: "#1e1540",
+    accent:      "#32114e",
+    themeAccent: "#a2d14a",
+    accentDark:  "#82a83a",
+    gold:        "#a2d14a",
+    goldDim:     "#142008",
+    textDim:     "#7890a0",   /* 5.9:1 no bg #0a0518 */
+    textMid:     "#a0b8c8",
+    text:        "#a2d14a",
+    aux:         ["#101419"],
+  },
+  AECS: {
+    bg:          "#0e0900",
+    bgPanel:     "#1c1400",
+    bgCard:      "#261c00",
+    bgCardHover: "#302400",
+    accent:      "#d7ae26",
+    themeAccent: "#d7ae26",
+    accentDark:  "#a88820",
+    gold:        "#d7ae26",
+    goldDim:     "#2a1e00",
+    textDim:     "#a09840",   /* 6.3:1 no bg #100c00 */
+    textMid:     "#c0b870",
+    text:        "#feea75",
+    aux:         ["#feea75"],
+  },
+  "PSICO PUC": {
+    bg:          "#120000",
+    bgPanel:     "#1e0000",
+    bgCard:      "#280000",
+    bgCardHover: "#330000",
+    accent:      "#c00100",
+    themeAccent: "#f0e0e0",   /* branco-rosado: nav, bordas, thead */
+    accentDark:  "#c8a0a0",
+    gold:        "#ffc200",   /* amarelo só nos detalhes: concluído, campeão, pts */
+    goldDim:     "#2e1a00",
+    textDim:     "#c08080",   /* 6.5:1 no bg #120000 */
+    textMid:     "#d0a0a0",
+    text:        "#f0e0e0",
+    aux:         ["#fcfcfc", "#000301"],
+  },
+  "RI UFRJ": {
+    bg:          "#090c10",
+    bgPanel:     "#0e1318",
+    bgCard:      "#141b22",
+    bgCardHover: "#1b2430",
+    accent:      "#003374",
+    themeAccent: "#c4c4c6",
+    accentDark:  "#9898a0",
+    gold:        "#c4c4c6",
+    goldDim:     "#181c20",
+    textDim:     "#7a8a96",   /* 5.2:1 no bg #090c10 */
+    textMid:     "#a0b0bc",
+    text:        "#c4c4c6",
+    aux:         ["#1b254a"],
+  },
 };
 
 const POINTS_BY_PLACEMENT = {

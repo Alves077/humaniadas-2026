@@ -19,7 +19,7 @@ function closeAdminModal() {
 
 async function submitAdminLogin() {
   const username = document.getElementById('adminEmailInput').value.trim();
-  const email = `${username}@humaniadas.local`;
+  const email = `${username}@humaniadas.com`;
   const password = document.getElementById('adminPasswordInput').value;
 
   const { data, error } = await db.auth.signInWithPassword({ email, password });
@@ -33,30 +33,30 @@ async function submitAdminLogin() {
 
   isAdmin = true;
   closeAdminModal();
-  updateAdminUI();
-  renderAll();
+  window.location.replace(location.pathname);
 }
 
 async function logoutAdmin() {
   if (!confirm('Sair do modo admin?')) return;
   await db.auth.signOut();
-  isAdmin = false;
-  updateAdminUI();
-  renderAll();
+  window.location.replace(location.pathname);
 }
 
 function updateAdminUI() {
   const icon = document.getElementById('adminToggleIcon');
   const label = document.getElementById('adminToggleLabel');
   const btn = document.getElementById('adminToggleBtn');
+  const authBtn = document.getElementById('authBtn');
   if (isAdmin) {
     icon.textContent = '🔓';
     label.textContent = 'Admin ativo';
     btn.classList.add('admin-active');
+    if (authBtn) authBtn.style.display = 'none';
   } else {
     icon.textContent = '🔒';
     label.textContent = 'Admin';
     btn.classList.remove('admin-active');
+    if (authBtn) authBtn.style.display = '';
   }
   const clearBtn = document.getElementById('clearBracketBtn');
   if (clearBtn) clearBtn.style.visibility = isAdmin ? 'visible' : 'hidden';
