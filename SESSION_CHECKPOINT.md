@@ -4,98 +4,135 @@
 ## Estado atual do app
 
 **Funcionando:**
-- Aba Geral: pódio + tabela de classificação com pontos por esporte e cheerleading
-- Aba Chaveamentos: grid com toggle Masculino/Feminino (só mobile); desktop mostra ambos os gêneros lado a lado
-- Aba Cheerleading: lista de colocações 1º–9º, editável por admin ou usuário logado
-- Aba Simulações: lista agrupada por atlética (requer login), filtro por atlética (pills desktop / select mobile). Avatar usa logo da atlética. Clicar num card expande painel abaixo com tabela completa de standings. Paleta da atlética aplicada no painel (thead, células, linha dona, grupo label e painel com mesmo bg via CSS `:has()`)
-- **Theming global por atlética:** ao logar, `--accent`, `--accent-dim`, `--line`, `--line-strong` são sobrescritos com a paleta da atlética do usuário. Resetado ao deslogar
-- Auth: login/logout/cadastro com reload para home; admin via app_metadata.is_admin
-- Hash routing: #geral, #chaveamentos, #cheerleading, #simulacoes, #bracket
-- Toggle "Minha Simulação / Resultado Oficial" centralizado no mobile, oculto na aba Simulações
-- Footer ancorado no rodapé
+- Sistema de theming completo por atlética (9 times) — bg, accent, gold, textDim, textMid aplicados no login via `applyTeamTheme()`
+- Aba Geral: pódio + tabela de standings com hover e zeros temáticos
+- Aba Chaveamentos: bracket eliminatório com scores
+- Aba Cheerleading: lista de posições com selects, layout mobile ajustado
+- Aba Simulações: lista vertical com expansão inline, dots de completion de esporte por participante
+- Menu mobile: backdrop + nav fora do header, `position: fixed`, z-index 9999/9998, `isolation: isolate` no `.shell`
+- Login/logout com reset de tema
 
 **Parcialmente implementado:**
-- Theming global: implementado para todas as 9 atléticas. Cores definidas mas não testadas para todas (só SPUFF testado visualmente). Cores muito escuras (HOTUR `#020684`, RI UFRJ `#003374`) podem ter baixo contraste como `--accent` no dark theme — ajustar se necessário.
+- Theming mobile: cores aplicadas mas não validadas visualmente em todas as atléticas no mobile
+- Dots de completion na aba Simulações: mostram esportes preenchidos, não acertos vs resultado real (intencional)
 
 **Pendente de validação:**
-- Comportamento visitante (sem login) em todas as abas
-- Testes mobile end-to-end
-- Validação visual do theming para cada atlética
+- Reconectar Vercel ao GitHub para deploy em produção
+- Testes mobile end-to-end em todas as abas com login de cada atlética
+- Fluxo visitante (sem login) em mobile
 
 ---
 
 ## Decisões tomadas
 
-- **SPA com hash routing** — definitivo
-- **Paleta Terracota Universitário** (accent #C8702A, bg #14100D) — base; sobrescrita por atlética ao logar
-- **Emojis removidos de elementos estruturais** — definitivo
-- **CSS modularizado** em 9 arquivos por domínio — definitivo
-- **Selects padronizados** — border: --border-input padrão, accent no focus/hover — definitivo
-- **Reload completo** no login/logout/cadastro — definitivo
-- **Toggle Masc/Fem em Chaveamentos** — só no mobile; desktop sempre mostra os dois gêneros lado a lado — definitivo
-- **Simulações: painel expansível** (não nova aba) ao clicar num card — definitivo
-- **Avatar de atlética** usa logo PNG de `img/teams/` — definitivo
-- **Paleta por atlética na tabela expandida**: thead com tint rgba da cor primária + texto/Total na cor secundária (TEAM_TEXT_COLORS) + linha da dona destacada — definitivo
-- **Theming global por atlética**: sobrescreve variáveis CSS `--accent` e derivadas no `documentElement` — definitivo
-- **CSS `:has()` para grupo de simulação**: `.sim-group:has(.sim-user-detail[style*="block"])` aplica `var(--bg-panel)` ao grupo inteiro quando painel aberto — definitivo
+- **Decisão:** Theming global por atlética via CSS custom properties no `:root`
+  **Motivo:** Identidade visual distinta por time ao logar; sem build step
+  **Status:** definitivo
+
+- **Decisão:** Separar `TEAM_COLORS` (cor primária para bordas/tints, pode ser escura) de `themeAccent` (CSS --accent, deve ser legível em bg escuro) de `gold` (CONCLUÍDO, campeão)
+  **Motivo:** HOTUR UFF e RI UFRJ têm cor primária navy (#020684 / #003374) — ilegível como texto; themeAccent resolve isso
+  **Status:** definitivo
+
+- **Decisão:** PSICO PUC usa branco/off-white como themeAccent, amarelo só no gold
+  **Motivo:** Diferenciar de GEMEL (também vermelho+amarelo); PSICO PUC = vermelho+branco, detalhes amarelos
+  **Status:** definitivo
+
+- **Decisão:** RI UFRJ backgrounds em charcoal-aço (#090c10 / #141b22) em vez de navy puro
+  **Motivo:** Diferenciar visualmente de HOTUR UFF (azul-índigo profundo)
+  **Status:** definitivo
+
+- **Decisão:** Layout Simulações: lista vertical full-width com expansão inline (tabela abre abaixo do card, 100% largura)
+  **Motivo:** Master-detail testado e descartado — tabela de 15 colunas precisa de largura total; coluna lateral roubava espaço
+  **Status:** definitivo
+
+- **Decisão:** Cards da lista de Simulações são full-width com dots de completion de esporte
+  **Motivo:** Resolver o whitespace vazio ao lado dos cards estreitos; dots dão info útil sem complicar a expansão
+  **Status:** definitivo
+
+- **Decisão:** Sem ranking de acerto nas Simulações
+  **Motivo:** O sistema é de exploração de cenários, não bolão — sem comparação com resultado real
+  **Status:** definitivo
+
+- **Decisão:** `.mobile-nav` movido para fora do `<header>` com `position: fixed`
+  **Motivo:** `backdrop-filter` no header criava containing block inválido para `position: absolute`; fora do header + fixed resolve em todos os browsers
+  **Status:** definitivo
+
+- **Decisão:** `isolation: isolate` no `.shell`
+  **Motivo:** Sem stacking context explícito, cheer items participavam do root stacking context e apareciam acima do overlay do menu mobile (z-9999) em compositing do Chrome
+  **Status:** definitivo
+
+- **Decisão:** Padding horizontal mobile unificado em 16px (`top-inner`, `.shell`, `.mobile-tab`)
+  **Motivo:** Shell tinha 14px, header tinha 24px — conteúdo e header desalinhados no mobile
+  **Status:** definitivo
 
 ---
 
-## Arquivos alterados nesta sessão
+## Trabalho concluído nesta sessão
 
-| Arquivo | O que mudou |
-|---|---|
-| `js/data.js` | TEAM_COLORS: cores reais de todas as 9 atléticas; TEAM_TEXT_COLORS: completo para todas; adicionado TEAM_PALETTES com paleta completa (accent, accentAlt, text, aux, bg) |
-| `js/state.js` | Adicionado `applyTeamTheme(atletica)` e `resetTeamTheme()` — sobrescrevem/limpam `--accent`, `--accent-dim`, `--accent-dark`, `--line`, `--line-strong` no documentElement |
-| `js/auth/user.js` | `onSignIn`: chama `applyTeamTheme(profile.atletica)`; `onSignOut`: chama `resetTeamTheme()` |
-| `js/render/simulacoes.js` | Reescrito: painel expansível com paleta completa da atlética; sim-group background via JS setProperty; sim-detail-table com cores por linha |
-| `css/simulacoes.css` | `.sim-group:has(.sim-user-detail[style*="block"])`: bg-panel; `.team-col`: position:static + background:transparent + text-align:center; pills inativos: background:transparent |
-| `css/sports.css` | gender-toggle mobile; ajuste padding/gap dos cards |
-| `css/components.css` | `.view-toggle-inner` centralizado no mobile |
-
----
-
-## Convenções que não podem ser esquecidas
-
-- **Commits manuais:** nunca usar git via ferramentas
-- **`BM_MATCH_H = 140`** em bracket.js — constante calibrada para mobile; não alterar
-- **Admin** identificado por `app_metadata.is_admin = true` no JWT
-- **Tabela `profiles`** usa coluna `id`; **`simulations`** usa `user_id` — não confundir
-- **`var viewingSimulacao`** permanece declarado (var, escopo global) em simulacoes.js mas é sempre null
-- **RLS ativo** em todas as tabelas
-- **Sem build step, sem npm** — ordem dos scripts em index.html é crítica
-- **`body { display: flex }` requer `width: 100%` no `.shell`**
-- **Texto sobre accent (#C8702A):** usar `var(--bg)` (#14100D), nunca branco — ATENÇÃO: com theming, accents muito claros (amarelo RI UFF, AECS) vão precisar de texto escuro, não `var(--bg)`. Revisar se houver problema.
-- **Logo das atléticas:** `img/teams/${name.toLowerCase().replace(/\s+/g,'_')}.png` — todas as 9 existem
-- **TEAM_PALETTES**: accent = cor de destaque para theming global; text = cor de texto na linha destacada da sim table; aux = cores auxiliares da identidade
-
----
-
-## Arquivos críticos
-
-| Arquivo | Papel |
-|---|---|
-| `js/data.js` | TEAMS, BRACKETS, POINTS_BY_PLACEMENT, TEAM_COLORS, TEAM_TEXT_COLORS, TEAM_PALETTES |
-| `js/state.js` | Estado global, applyTeamTheme/resetTeamTheme, loadState/saveState, setWinner, setCheer |
-| `js/logic.js` | getMatches, computePlacements, computeGeneralStandings |
-| `js/main.js` | showView, resolveHash, hash routing, openBracket |
-| `js/auth/user.js` | initAuth, onSignIn (chama applyTeamTheme), onSignOut (chama resetTeamTheme) |
-| `js/auth/admin.js` | isAdmin flag, submitAdminLogin, logoutAdmin |
-| `js/render/simulacoes.js` | loadAllSimulations, renderSimulacoes, toggleSimDetail, simDetailTable |
-| `js/render/bracket.js` | Render do bracket (BM_MATCH_H = 140 — não alterar) |
-| `css/variables.css` | Todos os tokens de design (accent sobrescrito em runtime pelo theming) |
-| `index.html` | Ordem dos `<link>` e `<script>` é crítica |
+- **`js/data.js`** — TEAM_PALETTES completo para 9 atléticas; RI UFRJ backgrounds alterados para charcoal-aço
+- **`js/state.js`** — `applyTeamTheme()` e `resetTeamTheme()` com todas as variáveis CSS (`--accent-rgb`, `--bg`, `--bg-panel`, `--bg-card`, `--bg-card-hover`, `--accent`, `--accent-dim`, `--accent-dark`, `--line`, `--line-strong`, `--gold`, `--gold-dim`, `--gold-glow`, `--text-dim`, `--text-mid`)
+- **`css/podium.css`** — Removidos 3 hardcodes laranja: gradiente p1 (`#201208` → `var(--bg-card-hover)`), hover da tabela (`rgba(200,112,42,0.04)` → `rgba(var(--accent-rgb),0.06)`), zeros (`#3A2A1E` → `rgba(var(--accent-rgb),0.20)`)
+- **`css/sports.css`** — Hardcodes de laranja removidos; `.sport-card.done` com `var(--gold)`; `.sport-badge::before` com `var(--text-dim)` em vez de amarelo
+- **`css/simulacoes.css`** — Reescrito: layout com `.sim-group`, cards full-width, `.sim-sport-dots`, expansão inline restaurada, seta com rotação CSS
+- **`js/render/simulacoes.js`** — Reescrito: `filledSports()`, `simUserCard()` com dots, `toggleSimDetail()` atualiza DOM diretamente (sem re-render da lista), `openDetailId` singleton
+- **`css/cheerleading.css`** — Mobile: padding/gap reduzidos, avatar top-3 forçado para 40px via CSS
+- **`index.html`** — `.mobile-nav` movido para fora do `<header>`; `<div class="nav-backdrop">` adicionado
+- **`css/components.css`** — `.mobile-nav` → `position: fixed; z-index: 9999`; `.nav-backdrop` → `position: fixed; top/right/bottom/left: 0; z-index: 9998`; padding mobile unificado em 16px; `.mobile-tab` padding ajustado
+- **`css/layout.css`** — `.shell { isolation: isolate }`; padding mobile 14px → 16px
+- **`js/main.js`** — `toggleMobileMenu()` e `mobileNavTo()` sincronizam o `navBackdrop`
 
 ---
 
 ## Pendências (em ordem de prioridade)
 
-- [ ] Testar theming visual para cada atlética — especialmente HOTUR UFF (#020684) e RI UFRJ (#003374) que são azuis muito escuros como --accent
-- [ ] Testar fluxo visitante (sem login) em todas as abas
-- [ ] Testes mobile end-to-end: burger nav, bracket scroll, avatar dropdown, toggle
-- [ ] Reconectar Vercel ao GitHub para deploy em produção
-- [ ] Convidar usuários de cada atlética para validar agrupamento na aba Simulações
+- [ ] Reconectar Vercel ao GitHub e fazer deploy em produção (pendente desde sessão anterior)
+- [ ] Validar overlay do menu mobile no dispositivo físico depois do `isolation: isolate` — confirmar que cheer items 4°/5° ficam atrás do backdrop
+- [ ] Testes visuais mobile de todas as 9 atléticas logadas (theming, contraste, legibilidade)
+- [ ] Testar fluxo visitante (sem login) no mobile — navegação, chaveamentos, geral
+- [ ] Validar aba Simulações no mobile após mudanças de layout (dots visíveis, expansão correta, filtro)
+
+---
 
 ## Bugs conhecidos
 
-Nenhum bug ativo no momento.
+- **Overlay menu mobile sobre cheer items**: itens 4° e 5° da aba Cheerleading apareciam acima do overlay do menu mobile. Corrigido com `isolation: isolate` no `.shell` — aguarda validação no dispositivo físico.
+- **`inset: 0` no backdrop**: substituído por `top/right/bottom/left: 0` explícitos por compatibilidade com iOS Safari antigo — já corrigido.
+
+---
+
+## Convenções do projeto que não podem ser esquecidas
+
+- **Sem build step, sem npm** — HTML estático com CDN Supabase. Ordem dos `<script>` em `index.html` é crítica.
+- **Commits manuais** — nunca usar git via ferramentas. O usuário commita depois de testar no browser.
+- **Theming**: usar sempre `themeAccent` (não `accent`) para CSS `--accent`; `accent` pode ser cor escura ilegível (ex: HOTUR UFF #020684)
+- **`--accent-rgb`** deve ser derivado de `themeAccent` (não de `accent`) — usado em `rgba(var(--accent-rgb), opacity)` no CSS
+- **`TEAM_TEXT_COLORS`** = cor do texto na linha destacada da atlética na tabela de Simulações (legível sobre fundo colorido). Diferente de `themeAccent`.
+- **`goldDim`** no TEAM_PALETTES é `string hex`, não `rgba()` — `applyTeamTheme` usa direto como `--gold-dim`
+- **`BM_MATCH_H = 140`** em `bracket.js` — não alterar
+- **Admin** identificado por `app_metadata.is_admin = true` no JWT
+- **RLS ativo** em todas as tabelas Supabase
+- **`isolation: isolate` no `.shell`** — não remover; garante que conteúdo da página fique abaixo dos overlays fixos (menu, modais)
+- **`.mobile-nav` fora do `<header>`** — não mover de volta para dentro; `backdrop-filter` do header quebra `position: fixed/absolute` em alguns browsers
+
+---
+
+## Arquivos críticos
+
+- **`js/data.js`** — TEAM_PALETTES (9 times), TEAM_COLORS, TEAM_TEXT_COLORS, BRACKETS, SPORT_NAMES
+- **`js/state.js`** — `applyTeamTheme()`, `resetTeamTheme()`, estado global, Supabase client, save/load
+- **`css/variables.css`** — todas as CSS custom properties padrão (tema default terracota)
+- **`index.html`** — estrutura HTML completa, ordem dos scripts, mobile nav fora do header
+- **`css/layout.css`** — `.shell { isolation: isolate }` — crítico para stacking do menu mobile
+- **`css/components.css`** — header, mobile nav, backdrop, modais, user avatar dropdown
+- **`js/render/simulacoes.js`** — toda a lógica de renderização da aba Simulações
+- **`js/render/cheer.js`** — renderização da aba Cheerleading
+- **`js/main.js`** — roteamento de views, toggleMobileMenu, showView
+
+---
+
+## Próximos passos sugeridos
+
+1. Validar o fix do overlay mobile (menu sobre cheer items) no dispositivo físico ou no dev tools com o fix `isolation: isolate` em vigor
+2. Reconectar Vercel ao GitHub e fazer o primeiro deploy com todas as mudanças desta sessão
+3. Fazer rodada de testes mobile completa: cada atlética logada → navegar por todas as abas → verificar theming, contraste, menu
+4. Se o deploy estiver ok, compartilhar o link com os participantes para teste real

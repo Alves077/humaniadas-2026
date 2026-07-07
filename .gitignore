@@ -5,6 +5,7 @@ node_modules/
 .env
 .env.local
 .env.*.local
+SESSION_CHECKPOINT.md
 
 # Sistema operacional
 .DS_Store
