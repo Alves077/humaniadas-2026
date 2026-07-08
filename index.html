@@ -160,13 +160,13 @@
 
     <!-- GERAL -->
     <section class="view active" id="view-geral">
-      <div class="view-header">
+      <div class="view-header view-header--geral">
         <h1 class="view-title">Classificação Geral</h1>
-        <div style="display:flex;align-items:center;gap:10px;">
+        <div class="view-header-actions">
           <div class="progress-pill" id="progressPill"></div>
           <button class="export-btn" onclick="exportRanking()" title="Exportar ranking como imagem">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            Exportar
+            <span class="export-btn-label">Exportar</span>
           </button>
         </div>
       </div>
@@ -186,15 +186,11 @@
 
     <!-- CHAVEAMENTOS HUB -->
     <section class="view" id="view-chaveamentos">
-      <div class="view-header">
-        <div>
-          <h1 class="view-title">Chaveamentos</h1>
-          <p class="view-sub">Selecione um esporte para ver os resultados</p>
-        </div>
-        <div style="display:flex;align-items:center;gap:10px;">
-          <div class="progress-pill" id="sportsProgressPill"></div>
-          <button class="clear-btn" id="clearAllBracketsBtn" onclick="clearAllBrackets()" style="display:none;">🗑 Limpar tudo</button>
-        </div>
+      <div class="view-header view-header--split">
+        <h1 class="view-title">Chaveamentos</h1>
+        <button class="clear-btn" id="clearAllBracketsBtn" onclick="clearAllBrackets()" style="display:none;">🗑 Limpar tudo</button>
+        <p class="view-sub">Selecione um esporte para ver os resultados</p>
+        <div class="progress-pill" id="sportsProgressPill"></div>
       </div>
       <div class="gender-toggle" id="genderToggle">
         <button class="gtab active" data-g="masc" onclick="setGenderFilter('masc')">Masculino</button>

@@ -58,6 +58,35 @@ body {
   margin-top: 3px;
 }
 
+/* Wrapper genérico para pill + botão de ação à direita do header */
+.view-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Header com título+ação alinhados na linha 1, subtítulo+pill na linha 2.
+   Áreas nomeadas (em vez de auto-flow) para manter o layout estável mesmo
+   quando o botão de ação fica display:none (ex: aba Resultado Oficial). */
+.view-header--split {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-areas:
+    "title action"
+    "sub   pill";
+  align-items: center;
+  row-gap: 4px;
+  column-gap: 16px;
+}
+.view-header--split .view-title    { grid-area: title; }
+.view-header--split .clear-btn     { grid-area: action; }
+.view-header--split .view-sub      { grid-area: sub; }
+.view-header--split .progress-pill { grid-area: pill; }
+.view-header--split .clear-btn,
+.view-header--split .progress-pill {
+  justify-self: end;
+}
+
 /* progress pill */
 .progress-pill {
   font-size: 12px;
@@ -115,5 +144,24 @@ body {
   .progress-pill {
     font-size: 10px;
     padding: 4px 8px;
+  }
+
+  /* Geral: sobe a linha de ações (pill + exportar) para cima do título,
+     em vez de disputar espaço na mesma linha */
+  .view-header--geral {
+    flex-direction: column-reverse;
+    align-items: stretch;
+    gap: 8px;
+  }
+  .view-header--geral .view-header-actions {
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  /* Chaveamentos: mantém o grid 2x2, aumenta o espaço vertical entre
+     o botão "Limpar tudo" e o pill de progresso na coluna direita */
+  .view-header--split {
+    row-gap: 8px;
+    column-gap: 10px;
   }
 }

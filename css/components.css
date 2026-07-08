@@ -558,4 +558,8 @@ select.modal-input {
   #adminToggleLabel { display: none; }
   .view-toggle-inner { justify-content: center; }
   .mobile-tab       { padding: 14px 16px; } /* alinha com top-inner e shell */
+
+  /* Exportar vira botão icon-only para não truncar o texto */
+  .export-btn-label { display: none; }
+  .export-btn        { padding: 8px; gap: 0; }
 }
