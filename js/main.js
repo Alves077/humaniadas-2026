@@ -168,21 +168,26 @@ async function exportRanking() {
     allowTaint: true,
   });
 
-  const dataUrl = canvas.toDataURL('image/png');
+  const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+  const file = new File([blob], 'humaniadas2026-ranking.png', { type: 'image/png' });
 
-  if (navigator.canShare) {
-    const blob = await (await fetch(dataUrl)).blob();
-    const file = new File([blob], 'humaniadas2026-ranking.png', { type: 'image/png' });
-    if (navigator.canShare({ files: [file] })) {
+  if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    try {
+      // No mobile abre a folha nativa de compartilhamento (WhatsApp, Salvar em Fotos, etc.)
       await navigator.share({ files: [file], title: 'Humaniadas 2026 — Ranking' });
       return;
+    } catch (err) {
+      if (err.name === 'AbortError') return; // usuário cancelou o compartilhamento
+      // qualquer outro erro cai no fallback de download abaixo
     }
   }
 
+  const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.download = 'humaniadas2026-ranking.png';
-  link.href = dataUrl;
+  link.href = url;
   link.click();
+  URL.revokeObjectURL(url);
 }
 
 function clearAllBrackets() {
