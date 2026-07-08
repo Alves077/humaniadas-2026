@@ -58,13 +58,12 @@ function updateAdminUI() {
     icon.textContent = '🔓';
     label.textContent = 'Admin ativo';
     btn.classList.add('admin-active');
-    if (authBtn) authBtn.style.display = 'none';
   } else {
     icon.textContent = '🔒';
     label.textContent = 'Admin';
     btn.classList.remove('admin-active');
-    if (authBtn) authBtn.style.display = '';
   }
+  if (authBtn) authBtn.style.display = (isAdmin || currentUser) ? 'none' : '';
   const clearBtn = document.getElementById('clearBracketBtn');
   if (clearBtn) clearBtn.style.visibility = canEditBrackets() ? 'visible' : 'hidden';
   const clearAllBtn = document.getElementById('clearAllBracketsBtn');
