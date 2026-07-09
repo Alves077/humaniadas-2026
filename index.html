@@ -49,15 +49,27 @@
         <input type="text" id="regUsername" class="modal-input" placeholder="Usuário" style="margin-bottom:8px;" onkeydown="if(event.key==='Enter') document.getElementById('regAtletica').focus()">
         <select id="regAtletica" class="modal-input" style="margin-bottom:8px;">
           <option value="">Selecione sua atlética</option>
-          <option>GPDES</option>
-          <option>SPUFF</option>
-          <option>PSICO UFRJ</option>
-          <option>PSICO PUC</option>
-          <option>GEMEL</option>
-          <option>AECS</option>
-          <option>RI UFF</option>
-          <option>HOTUR UFF</option>
-          <option>RI UFRJ</option>
+          <optgroup label="Série A">
+            <option>GPDES</option>
+            <option>SPUFF</option>
+            <option>PSICO UFRJ</option>
+            <option>PSICO PUC</option>
+            <option>GEMEL</option>
+            <option>AECS</option>
+            <option>RI UFF</option>
+            <option>HOTUR UFF</option>
+            <option>RI UFRJ</option>
+          </optgroup>
+          <optgroup label="Série B">
+            <option>MONARCAS</option>
+            <option>RI UERJ</option>
+            <option>DGEI UFRJ</option>
+            <option>GEO UFF</option>
+            <option>HIST UFF</option>
+            <option>GALUDA DE CP</option>
+            <option>HIST UNIRIO</option>
+            <option>CORUJAS UERJ</option>
+          </optgroup>
         </select>
         <input type="password" id="regPassword" class="modal-input" placeholder="Senha (mín. 6 caracteres)" onkeydown="if(event.key==='Enter') submitRegister()">
       </div>
