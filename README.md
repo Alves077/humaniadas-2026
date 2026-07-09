@@ -71,7 +71,7 @@ img/
 ```js
 const SUPABASE_URL   = 'https://SEU_PROJECT_ID.supabase.co';
 const SUPABASE_ANON_KEY = 'SUA_ANON_KEY';
-const CHAMPIONSHIP_ID = 1;
+const CHAMPIONSHIP_ID = '1';
 ```
 
 2. Abra `index.html` com Live Server (VS Code) ou qualquer servidor HTTP local.  
