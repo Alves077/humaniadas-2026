@@ -181,3 +181,32 @@ function pointsForSportB(sportName, st) {
   });
   return pts;
 }
+
+// Classificação geral da Série B — mesma ideia de computeGeneralStandings(),
+// mas com TEAMS_B/CHEER_TEAMS_B e só 6 posições de cheer (só 6 dos 8 times
+// participam do cheerleading da Série B).
+function computeGeneralStandingsB() {
+  const totals = {};
+  TEAMS_B.forEach(t => totals[t] = { team: t, perSport: {}, total: 0, cheer: 0 });
+
+  SPORT_NAMES.forEach(sport => {
+    const pts = pointsForSportB(sport, state.brackets[sport]);
+    TEAMS_B.forEach(t => {
+      totals[t].perSport[sport] = pts[t] || 0;
+      totals[t].total += pts[t] || 0;
+    });
+  });
+
+  for (let pos = 1; pos <= CHEER_TEAMS_B.length; pos++) {
+    const team = state.cheer[pos];
+    if (team && totals[team]) {
+      totals[team].cheer = POINTS_BY_PLACEMENT[pos];
+      totals[team].total += POINTS_BY_PLACEMENT[pos];
+    }
+  }
+
+  const arr = Object.values(totals);
+  arr.sort((a, b) => b.total - a.total);
+  arr.forEach((r, i) => r.position = i + 1);
+  return arr;
+}

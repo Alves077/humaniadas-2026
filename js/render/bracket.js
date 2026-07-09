@@ -367,6 +367,6 @@ window.previewSerieB = function(sportName) {
   }
   currentSport = sportName;
   showView('bracket');
-  renderBracket();
-  console.log(`Preview Série B: ${sportName}. Pra voltar pra Série A, rode: currentSerie = 'A'`);
+  renderAll(); // atualiza Geral/Chaveamentos/Cheerleading também, não só o bracket
+  console.log(`Preview Série B: ${sportName}. Pra voltar pra Série A, rode: currentSerie = 'A'; renderAll();`);
 };

@@ -27,9 +27,12 @@ function filledSports(brackets) {
 // Também retorna quais esportes estavam completos nesse bracket simulado — sem isso,
 // "time fez 0 pontos de verdade" e "esporte ainda não simulado" ficam indistinguíveis
 // (pointsForSport() retorna 0 pra todo mundo nos dois casos).
-function computeStandingsFrom(brackets, cheer) {
+// `serie` decide qual motor usar — o dono da simulação sempre pertence a uma
+// série só (via TEAM_SERIE do time escolhido no cadastro).
+function computeStandingsFrom(brackets, cheer, serie = 'A') {
   const savedBrackets = JSON.parse(JSON.stringify(state.brackets));
   const savedCheer    = JSON.parse(JSON.stringify(state.cheer));
+  const isB = serie === 'B';
 
   SPORT_NAMES.forEach(s => {
     state.brackets[s] = { r1:null, r2a:null, r2b:null, r2c:null, r2d:null, r3a:null, r3b:null, final:null };
@@ -38,8 +41,9 @@ function computeStandingsFrom(brackets, cheer) {
   for (let i = 1; i <= 9; i++) state.cheer[i] = null;
   if (cheer) Object.entries(cheer).forEach(([k, v]) => { state.cheer[Number(k)] = v; });
 
-  const standings       = computeGeneralStandings();
-  const completedSports = new Set(SPORT_NAMES.filter(s => isSportComplete(s)));
+  const standings       = isB ? computeGeneralStandingsB() : computeGeneralStandings();
+  const completedSports = new Set(SPORT_NAMES.filter(s =>
+    isB ? isSportCompleteB(s, state.brackets[s]) : isSportComplete(s)));
 
   SPORT_NAMES.forEach(s => { state.brackets[s] = savedBrackets[s]; });
   Object.keys(savedCheer).forEach(k => { state.cheer[Number(k)] = savedCheer[k]; });
@@ -58,7 +62,8 @@ function simDetailTable(sim) {
     return '<p class="sim-empty" style="padding:10px 14px 8px;">Sem simulação registrada.</p>';
   }
 
-  const { standings, completedSports } = computeStandingsFrom(sim.brackets, sim.cheer);
+  const serie = TEAM_SERIE[sim.atletica] || 'A';
+  const { standings, completedSports } = computeStandingsFrom(sim.brackets, sim.cheer, serie);
   const anyPoints = standings.some(r => r.total > 0);
 
   /* thS usa a cor inline do time (headerColor) para respeitar a identidade da atlética
@@ -210,14 +215,18 @@ function renderSimulacoes() {
     return;
   }
 
-  if (!allSimulations.length) {
+  // Só mostra simulações de times da série ativa — misturar A e B na mesma
+  // lista sem distinção visual seria confuso.
+  const bySerie = allSimulations.filter(s => (TEAM_SERIE[s.atletica] || 'A') === currentSerie);
+
+  if (!bySerie.length) {
     grid.innerHTML = '<p class="sim-empty">Nenhuma simulação encontrada.</p>';
     if (filterEl) filterEl.innerHTML = '';
     return;
   }
 
   if (filterEl) {
-    const atleticas = [...new Set(allSimulations.map(s => s.atletica).filter(Boolean))]
+    const atleticas = [...new Set(bySerie.map(s => s.atletica).filter(Boolean))]
       .sort((a, b) => a.localeCompare(b, 'pt'));
     filterEl.innerHTML =
       `<div class="sim-pills">` +
@@ -241,8 +250,8 @@ function renderSimulacoes() {
   }
 
   const list = simFilter === 'todas'
-    ? allSimulations
-    : allSimulations.filter(s => s.atletica === simFilter);
+    ? bySerie
+    : bySerie.filter(s => s.atletica === simFilter);
 
   const groups = {};
   list.forEach(sim => {

@@ -4,7 +4,12 @@ function renderCheer() {
   grid.innerHTML = '';
   const usedTeams = Object.entries(state.cheer).filter(([,t]) => t).map(([,t]) => t);
 
-  for (let pos = 1; pos <= 9; pos++) {
+  // Série B: só 6 dos 8 times participam do cheerleading, então só 6 posições.
+  const isB = currentSerie === 'B';
+  const maxPos = isB ? CHEER_TEAMS_B.length : 9;
+  const teamOptions = isB ? CHEER_TEAMS_B : TEAMS;
+
+  for (let pos = 1; pos <= maxPos; pos++) {
     const current = state.cheer[pos];
     const pts = POINTS_BY_PLACEMENT[pos];
     const isTop = pos <= 3;
@@ -15,7 +20,7 @@ function renderCheer() {
 
     const nameHtml = (isAdmin || (!!currentUser && !viewingOfficial))
       ? (() => {
-          const opts = TEAMS.map(t => {
+          const opts = teamOptions.map(t => {
             const disabled = usedTeams.includes(t) && t !== current ? 'disabled' : '';
             return `<option value="${t}" ${t===current?'selected':''} ${disabled}>${t}</option>`;
           }).join('');

@@ -1,6 +1,6 @@
 /* ---------- Classificação Geral ---------- */
 function renderGeral() {
-  const standings = computeGeneralStandings();
+  const standings = currentSerie === 'B' ? computeGeneralStandingsB() : computeGeneralStandings();
   const anyPoints = standings.some(r => r.total > 0);
   const done = countCompletedSports();
 

@@ -31,5 +31,7 @@ function abbreviate(name) {
 }
 
 function countCompletedSports() {
-  return SPORT_NAMES.filter(s => isSportComplete(s)).length;
+  return currentSerie === 'B'
+    ? SPORT_NAMES.filter(s => isSportCompleteB(s, state.brackets[s])).length
+    : SPORT_NAMES.filter(s => isSportComplete(s)).length;
 }

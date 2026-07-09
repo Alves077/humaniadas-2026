@@ -19,10 +19,12 @@ const SPORT_GROUPS = [
 ];
 
 function sportCard(s) {
-  const champ = getMatches(s).final.winner;
-  const complete = isSportComplete(s);
+  const isB = currentSerie === 'B';
   const st = state.brackets[s];
-  const keys = ['r1','r2a','r2b','r2c','r2d','r3a','r3b','final'];
+  const champ = isB ? getMatchesB(s, st).final.winner : getMatches(s).final.winner;
+  const complete = isB ? isSportCompleteB(s, st) : isSportComplete(s);
+  // Sem prévia (r1) na Série B — quartas é a primeira rodada de fato.
+  const keys = isB ? ['r2a','r2b','r2c','r2d','r3a','r3b','final'] : ['r1','r2a','r2b','r2c','r2d','r3a','r3b','final'];
   const filledCount = keys.filter(k => !!st[k]).length;
   const pct = Math.round((filledCount / keys.length) * 100);
   return `<button class="sport-card ${complete ? 'done' : ''}" data-fill="${filledCount}" onclick="openBracket('${s.replace(/'/g,"\\'")}')">
