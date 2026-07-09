@@ -115,6 +115,37 @@ function renderR1Feeder(sportName, b, m) {
   </div>`;
 }
 
+// ── Layout data-driven por série ────────────────────────────────────────────────
+// Série A tem prévia (r1) alimentando a primeira quarta; Série B entra direto
+// nas quartas, com slots sempre estáticos (vêm de BRACKETS_B, nunca de outra
+// partida). Ambas retornam a mesma forma { hasR1, matches, quarters, roundLabel },
+// onde quarters é sempre um array de 4 { key, slots, hints }.
+function getBracketLayout(sportName, serie) {
+  if (serie === 'B') {
+    const q = BRACKETS_B[sportName];
+    const keys = ['r2a', 'r2b', 'r2c', 'r2d'];
+    return {
+      hasR1: false,
+      roundLabel: 'Quartas',
+      matches: getMatchesB(sportName, state.brackets[sportName]),
+      quarters: keys.map((key, i) => ({ key, slots: q[i], hints: q[i].map(t => t || '—') })),
+    };
+  }
+  const b = BRACKETS[sportName];
+  const matches = getMatches(sportName);
+  return {
+    hasR1: true,
+    roundLabel: 'Rodada 2',
+    matches,
+    quarters: [
+      { key: 'r2a', slots: [matches.r1.winner, b.D8], hints: ['Venc. 1ª Rodada', b.D8] },
+      { key: 'r2b', slots: [b.D10, b.D12], hints: [b.D10, b.D12] },
+      { key: 'r2c', slots: [b.D14, b.D16], hints: [b.D14, b.D16] },
+      { key: 'r2d', slots: [b.D18, b.D20], hints: [b.D18, b.D20] },
+    ],
+  };
+}
+
 // ── Mobile bracket ─────────────────────────────────────────────────────────────
 let _bmActiveIdx = 0;
 
@@ -169,47 +200,52 @@ function bmAt(top, html, label = '') {
     <div style="position:absolute;top:${top}px;left:0;right:0;">${html}</div>`;
 }
 
-function renderBracketMobile(s, b, m) {
+function renderBracketMobile(s, layout) {
+  const m = layout.matches;
   const prevScroll = document.getElementById('bmScroll');
   if (prevScroll) {
     const w = prevScroll.offsetWidth;
     if (w > 0) _bmActiveIdx = Math.round(prevScroll.scrollLeft / w);
   }
-  const rounds = [
-    {
-      label: '1ª Rodada',
-      html: bmColBody(bmAt(BM_FINAL_TOP, renderR1Feeder(s, b, m), '1ª Rodada'))
-    },
-    {
-      label: 'Rodada 2',
-      html: bmColBody(
-        bmAt(BM_R2[0], bMatchHint(s,'r2a',[m.r1.winner,b.D8],['Venc. 1ª Rodada',b.D8]), 'Chave A — Jogo 1') +
-        bmAt(BM_R2[1], bMatchHint(s,'r2b',[b.D10,b.D12],[b.D10,b.D12]), 'Chave A — Jogo 2') +
-        bmAt(BM_R2[2], bMatchHint(s,'r2c',[b.D14,b.D16],[b.D14,b.D16]), 'Chave B — Jogo 1') +
-        bmAt(BM_R2[3], bMatchHint(s,'r2d',[b.D18,b.D20],[b.D18,b.D20]), 'Chave B — Jogo 2')
+
+  const quarterLabels = layout.hasR1
+    ? ['Chave A — Jogo 1', 'Chave A — Jogo 2', 'Chave B — Jogo 1', 'Chave B — Jogo 2']
+    : ['Quartas 1', 'Quartas 2', 'Quartas 3', 'Quartas 4'];
+
+  const quarterRound = {
+    label: layout.roundLabel,
+    html: bmColBody(
+      layout.quarters.map((q, i) =>
+        bmAt(BM_R2[i], bMatchHint(s, q.key, q.slots, q.hints), quarterLabels[i])
+      ).join('')
+    ),
+  };
+
+  const semifinalRound = {
+    label: 'Semifinal',
+    html: bmColBody(
+      bmAt(BM_SEMI[0], bMatchHint(s,'r3a',[m.r2a.winner,m.r2b.winner],['Venc. Jogo 1','Venc. Jogo 2']), 'Semifinal A') +
+      bmAt(BM_SEMI[1], bMatchHint(s,'r3b',[m.r2c.winner,m.r2d.winner],['Venc. Jogo 3','Venc. Jogo 4']), 'Semifinal B')
+    ),
+  };
+
+  const finalRound = {
+    label: 'Final',
+    html: bmColBody(
+      bmAt(BM_FINAL_TOP,
+        bMatchHint(s,'final',[m.r3a.winner,m.r3b.winner],['Venc. Semi A','Venc. Semi B']) +
+        `<div class="b-champion-badge ${m.final.winner?'has-winner':''}" style="margin-top:10px;">
+          <span class="b-champ-trophy">🏆</span>
+          <span class="b-champ-name">${m.final.winner||'—'}</span>
+        </div>`,
+        'Final'
       )
-    },
-    {
-      label: 'Semifinal',
-      html: bmColBody(
-        bmAt(BM_SEMI[0], bMatchHint(s,'r3a',[m.r2a.winner,m.r2b.winner],['Venc. Jogo 1','Venc. Jogo 2']), 'Semifinal A') +
-        bmAt(BM_SEMI[1], bMatchHint(s,'r3b',[m.r2c.winner,m.r2d.winner],['Venc. Jogo 3','Venc. Jogo 4']), 'Semifinal B')
-      )
-    },
-    {
-      label: 'Final',
-      html: bmColBody(
-        bmAt(BM_FINAL_TOP,
-          bMatchHint(s,'final',[m.r3a.winner,m.r3b.winner],['Venc. Semi A','Venc. Semi B']) +
-          `<div class="b-champion-badge ${m.final.winner?'has-winner':''}" style="margin-top:10px;">
-            <span class="b-champ-trophy">🏆</span>
-            <span class="b-champ-name">${m.final.winner||'—'}</span>
-          </div>`,
-          'Final'
-        )
-      )
-    },
-  ];
+    ),
+  };
+
+  const rounds = layout.hasR1
+    ? [{ label: '1ª Rodada', html: bmColBody(bmAt(BM_FINAL_TOP, renderR1Feeder(s, BRACKETS[s], m), '1ª Rodada')) }, quarterRound, semifinalRound, finalRound]
+    : [quarterRound, semifinalRound, finalRound];
 
   const nav = rounds.map((r, i) =>
     `<button class="bm-pill ${i===0?'active':''}" data-idx="${i}" onclick="bmScrollTo(${i})">${r.label}</button>`
@@ -257,25 +293,18 @@ function renderBracket() {
   document.getElementById('bracketTitle').textContent = s;
   document.getElementById('bracketIcon').textContent = SPORT_ICONS[s] || '🏅';
 
-  const b = BRACKETS[s];
-  const m = getMatches(s);
+  const layout = getBracketLayout(s, currentSerie);
+  const m = layout.matches;
+  const [q1, q2, q3, q4] = layout.quarters;
 
   if (window.innerWidth <= 720) {
-    renderBracketMobile(s, b, m);
+    renderBracketMobile(s, layout);
     renderBracketStandings(s);
     return;
   }
 
-  const r2aSlots = [m.r1.winner, b.D8];
-  const r2bSlots = [b.D10, b.D12];
-  const r2cSlots = [b.D14, b.D16];
-  const r2dSlots = [b.D18, b.D20];
-
   const bracketHtml = [
-    bCol2('Rodada 2', [
-      { key:'r2a', slots: r2aSlots },
-      { key:'r2b', slots: r2bSlots },
-    ]),
+    bCol2(layout.roundLabel, [q1, q2]),
     connFork('right'),
     bCol1('Semifinal', 'r3a', [m.r2a.winner, m.r2b.winner]),
     connLine(),
@@ -296,23 +325,22 @@ function renderBracket() {
     connLine(),
     bCol1('Semifinal', 'r3b', [m.r2c.winner, m.r2d.winner]),
     connFork('left'),
-    bCol2('Rodada 2', [
-      { key:'r2c', slots: r2cSlots },
-      { key:'r2d', slots: r2dSlots },
-    ]),
+    bCol2(layout.roundLabel, [q3, q4]),
   ].join('');
 
   document.getElementById('bracketTree').innerHTML = bracketHtml;
-  document.getElementById('bracketR1').innerHTML = renderR1Feeder(s, b, m);
+  document.getElementById('bracketR1').innerHTML = layout.hasR1 ? renderR1Feeder(s, BRACKETS[s], m) : '';
   renderBracketStandings(s);
 }
 
 function renderBracketStandings(s) {
   const stEl = document.getElementById('bracketStandings');
-  if (!isSportComplete(s)) {
+  const complete    = currentSerie === 'B' ? isSportCompleteB(s, state.brackets[s])   : isSportComplete(s);
+  const placements  = complete ? (currentSerie === 'B' ? computePlacementsB(s, state.brackets[s]) : computePlacements(s)) : [];
+  if (!complete) {
     stEl.innerHTML = `<p style="color:var(--text-dim);font-size:13px;">A colocação aparece quando o campeão for definido.</p>`;
   } else {
-    const rows = computePlacements(s).map(r => `
+    const rows = placements.map(r => `
       <tr>
         <td>${r.placement}º</td>
         <td style="display:flex;align-items:center;gap:8px;">${teamAvatar(r.team, 26)} ${r.team}</td>
@@ -324,3 +352,21 @@ function renderBracketStandings(s) {
     </table>`;
   }
 }
+
+// ── DEBUG TEMPORÁRIO — remover quando a Fase 6 (toggle de série de verdade)
+// existir. Só pra visualizar o bracket da Série B sem UI dedicada ainda.
+// Uso no console: previewSerieB('Futsal Masc')
+window.previewSerieB = function(sportName) {
+  if (!BRACKETS_B[sportName]) {
+    console.error('Esporte inválido. Opções:', Object.keys(BRACKETS_B));
+    return;
+  }
+  currentSerie = 'B';
+  if (!state.brackets[sportName]) {
+    state.brackets[sportName] = { r1: null, r2a: null, r2b: null, r2c: null, r2d: null, r3a: null, r3b: null, final: null };
+  }
+  currentSport = sportName;
+  showView('bracket');
+  renderBracket();
+  console.log(`Preview Série B: ${sportName}. Pra voltar pra Série A, rode: currentSerie = 'A'`);
+};
