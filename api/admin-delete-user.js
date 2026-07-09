@@ -33,8 +33,8 @@ module.exports = async (req, res) => {
   }
 
   const targetId = req.body?.targetId;
-  if (!targetId) {
-    res.status(400).json({ error: 'targetId ausente' });
+  if (typeof targetId !== 'string' || !targetId) {
+    res.status(400).json({ error: 'targetId inválido' });
     return;
   }
   if (targetId === caller.id) {
