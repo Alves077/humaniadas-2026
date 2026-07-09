@@ -26,7 +26,10 @@ async function adminDeleteUser(userId, username) {
   if (!confirm(`Excluir a conta de "${username}"? Ação irreversível — perfil, simulação e login serão apagados.`)) return;
 
   const { data: { session } } = await db.auth.getSession();
-  if (!session) return;
+  if (!session) {
+    alert('Sessão expirada. Faça login novamente.');
+    return;
+  }
 
   try {
     const res = await fetch('/api/admin-delete-user', {
