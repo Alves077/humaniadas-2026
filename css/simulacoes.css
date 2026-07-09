@@ -110,13 +110,14 @@
 /* ── Excluir usuário (admin) ── */
 .sim-delete-btn {
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background: rgba(224, 85, 69, 0.10);
   border: 1px solid rgba(224, 85, 69, 0.40);
   border-radius: var(--radius-sm);
   color: var(--danger);
-  font-size: 15px;
-  line-height: 1;
-  padding: 6px 10px;
+  padding: 7px 9px;
   cursor: pointer;
   transition: all 0.15s;
 }
