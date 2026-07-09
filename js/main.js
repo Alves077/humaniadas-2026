@@ -197,6 +197,7 @@ function clearAllBrackets() {
     : 'Limpar todos os resultados da sua simulação? Esta ação não pode ser desfeita.';
   if (!confirm(msg)) return;
   SPORT_NAMES.forEach(s => { state.brackets[s] = {}; });
+  for (let i = 1; i <= 9; i++) state.cheer[i] = null;
   isAdmin ? saveState() : saveSimulation();
   renderAll();
 }
