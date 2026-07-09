@@ -245,17 +245,31 @@ function renderSimulacoes() {
   if (filterEl) {
     const atleticas = [...new Set(bySerie.map(s => s.atletica).filter(Boolean))]
       .sort((a, b) => a.localeCompare(b, 'pt'));
+    // Agrupa por série de origem só pra organizar a exibição — não exclui
+    // nada, já que qualquer usuário pode simular as duas séries e precisa
+    // continuar filtrável em qualquer aba.
+    const atleticasA = atleticas.filter(a => TEAM_SERIE[a] !== 'B');
+    const atleticasB = atleticas.filter(a => TEAM_SERIE[a] === 'B');
+    const pillBtn = a => {
+      const ea = escHtml(a);
+      return `<button class="sim-pill ${simFilter === a ? 'active' : ''}" data-atletica="${ea}">${ea}</button>`;
+    };
+    const optTag = a => {
+      const ea = escHtml(a);
+      return `<option value="${ea}" ${simFilter === a ? 'selected' : ''}>${ea}</option>`;
+    };
     filterEl.innerHTML =
       `<div class="sim-pills">` +
       `<button class="sim-pill ${simFilter === 'todas' ? 'active' : ''}" onclick="setSimFilter('todas')">Todas as Atléticas</button>` +
-      atleticas.map(a => {
-        const ea = escHtml(a);
-        return `<button class="sim-pill ${simFilter === a ? 'active' : ''}" data-atletica="${ea}">${ea}</button>`;
-      }).join('') +
+      `<span class="sim-pill-group-label">Série A</span>` +
+      atleticasA.map(pillBtn).join('') +
+      `<span class="sim-pill-group-label">Série B</span>` +
+      atleticasB.map(pillBtn).join('') +
       `</div>` +
       `<select class="sim-filter-select cheer-select" id="simFilterSelect">
         <option value="todas" ${simFilter === 'todas' ? 'selected' : ''}>Todas as Atléticas</option>
-        ${atleticas.map(a => { const ea = escHtml(a); return `<option value="${ea}" ${simFilter === a ? 'selected' : ''}>${ea}</option>`; }).join('')}
+        <optgroup label="Série A">${atleticasA.map(optTag).join('')}</optgroup>
+        <optgroup label="Série B">${atleticasB.map(optTag).join('')}</optgroup>
       </select>`;
 
     filterEl.querySelector('#simFilterSelect')

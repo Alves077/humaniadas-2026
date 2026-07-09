@@ -5,9 +5,21 @@
 
 .sim-pills {
   display: flex;
+  align-items: center;
   gap: 6px;
   flex-wrap: wrap;
 }
+.sim-pill-group-label {
+  flex-basis: 100%;
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin: 6px 0 -2px;
+}
+.sim-pill-group-label:first-of-type { margin-top: 2px; }
 .sim-filter-select { display: none; }
 
 .sim-pill {
