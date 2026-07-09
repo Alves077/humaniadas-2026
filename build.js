@@ -16,7 +16,10 @@ if (!url || !key || !id) {
   console.error('build.js: SUPABASE_URL, SUPABASE_ANON_KEY e CHAMPIONSHIP_ID precisam estar definidos');
   process.exit(1);
 }
+// CHAMPIONSHIP_ID é sempre string — championship_state.id é `text` no schema,
+// não numérico. Number(id) aqui quebraria silenciosamente pra qualquer valor
+// não-numérico (ex: um slug), virando NaN.
 fs.writeFileSync('js/config.js',
-  `const SUPABASE_URL = '${url}';\nconst SUPABASE_ANON_KEY = '${key}';\nconst CHAMPIONSHIP_ID = ${Number(id)};\n`
+  `const SUPABASE_URL = '${url}';\nconst SUPABASE_ANON_KEY = '${key}';\nconst CHAMPIONSHIP_ID = '${id}';\n`
 );
 console.log('js/config.js gerado com sucesso');
