@@ -69,7 +69,7 @@ function clearBracket() {
   if (!canEditBrackets() || !currentSport) return;
   if (!confirm(`Limpar todos os resultados de ${currentSport}?`)) return;
   state.brackets[currentSport] = {};
-  isAdmin ? saveState() : saveSimulation();
+  isAdmin ? (currentSerie === 'B' ? saveStateB() : saveState()) : saveSimulation();
   renderAll();
 }
 
@@ -202,6 +202,6 @@ function clearAllBrackets() {
   if (!confirm(msg)) return;
   SPORT_NAMES.forEach(s => { state.brackets[s] = {}; });
   for (let i = 1; i <= 9; i++) state.cheer[i] = null;
-  isAdmin ? saveState() : saveSimulation();
+  isAdmin ? (currentSerie === 'B' ? saveStateB() : saveState()) : saveSimulation();
   renderAll();
 }

@@ -44,10 +44,17 @@ function resetTeamTheme() {
 
 // Estado em memória
 const state = { brackets: {}, cheer: {} };
-// Cópia do estado oficial sempre em memória
+// Cópia do estado oficial sempre em memória (Série A)
 const officialState = { brackets: {}, cheer: {} };
+// Cópia do estado oficial da Série B — mesma ideia de officialState, em paralelo.
+// Não migra nada: Série A continua toda em officialState/championship_state
+// como sempre foi.
+const officialStateB = { brackets: {}, cheer: {} };
 // true = usuário está vendo o oficial, false = vendo a própria simulação
 let viewingOfficial = false;
+// 'A' | 'B' — ainda não trocado por nenhuma UI (isso é Fase 6). Enquanto
+// nada define currentSerie = 'B', todo código condicionado a ela é inerte.
+let currentSerie = 'A';
 
 function initState(target = state) {
   SPORT_NAMES.forEach(s => {
@@ -59,12 +66,13 @@ function initState(target = state) {
 function switchView(official) {
   viewingOfficial = official;
   if (official) {
-    // Copia estado oficial para state (read-only para usuário comum)
+    // Copia estado oficial (da série ativa) para state (read-only p/ usuário comum)
+    const source = currentSerie === 'B' ? officialStateB : officialState;
     SPORT_NAMES.forEach(s => {
-      state.brackets[s] = { ...officialState.brackets[s] };
+      state.brackets[s] = { ...source.brackets[s] };
     });
-    Object.keys(officialState.cheer).forEach(k => {
-      state.cheer[k] = officialState.cheer[k];
+    Object.keys(source.cheer).forEach(k => {
+      state.cheer[k] = source.cheer[k];
     });
   } else {
     updateViewToggleUI();
@@ -89,10 +97,15 @@ function updateViewToggleUI() {
 
 initState();
 initState(officialState);
+initState(officialStateB);
 
 // Cliente Supabase — só inicializa se as credenciais forem reais
 const DB_READY = !SUPABASE_URL.includes('SEU_PROJECT_ID') && !SUPABASE_ANON_KEY.includes('SUA_ANON');
 const db = DB_READY ? supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+
+// Linha separada em championship_state pro resultado oficial da Série B —
+// mesma tabela, mesmo formato jsonb, id diferente. Sem migração de schema.
+const CHAMPIONSHIP_ID_B = CHAMPIONSHIP_ID + '-B';
 
 let saveTimeout = null;
 
@@ -169,6 +182,67 @@ async function saveState() {
   }
 }
 
+// ─── Resultado oficial da Série B — mesmo padrão de loadState/saveState,
+// linha separada (CHAMPIONSHIP_ID_B) na mesma tabela ────────────────────────
+
+async function loadStateB() {
+  if (!DB_READY) return;
+  setSyncStatus('Carregando…');
+  try {
+    const { data, error } = await db
+      .from('championship_state')
+      .select('state')
+      .eq('id', CHAMPIONSHIP_ID_B)
+      .single();
+
+    if (error && error.code !== 'PGRST116') throw error;
+
+    if (data?.state) {
+      const saved = data.state;
+      if (saved.brackets) {
+        SPORT_NAMES.forEach(s => {
+          if (saved.brackets[s]) {
+            state.brackets[s] = { ...state.brackets[s], ...saved.brackets[s] };
+            officialStateB.brackets[s] = { ...state.brackets[s] };
+          }
+        });
+      }
+      if (saved.cheer) {
+        Object.entries(saved.cheer).forEach(([pos, team]) => {
+          state.cheer[Number(pos)] = team;
+          officialStateB.cheer[Number(pos)] = team;
+        });
+      }
+    }
+    setSyncStatus('');
+  } catch (e) {
+    console.error('Erro ao carregar estado (Série B):', e);
+    setSyncStatus('Sem conexão', 'error');
+  }
+}
+
+function scheduleSaveB() {
+  if (!DB_READY) return;
+  clearTimeout(saveTimeout);
+  setSyncStatus('Salvando…', 'saving');
+  saveTimeout = setTimeout(saveStateB, 800);
+}
+
+async function saveStateB() {
+  try {
+    const { error } = await db
+      .from('championship_state')
+      .upsert({ id: CHAMPIONSHIP_ID_B, state: { brackets: state.brackets, cheer: state.cheer }, updated_at: new Date().toISOString() });
+
+    if (error) throw error;
+    setSyncStatus('Salvo ✓');
+    setTimeout(() => setSyncStatus(''), 2000);
+  } catch (e) {
+    console.error('Erro ao salvar estado (Série B):', e);
+    setSyncStatus('Erro ao salvar', 'error');
+  }
+}
+
 // ─── Simulação do usuário ─────────────────────────────────────────────────────
 
 async function loadSimulation() {
@@ -236,7 +310,7 @@ function setWinner(sportName, matchKey, team) {
   cascade(matchKey);
 
   renderAll();
-  isAdmin ? scheduleSave() : scheduleSimulationSave();
+  isAdmin ? (currentSerie === 'B' ? scheduleSaveB() : scheduleSave()) : scheduleSimulationSave();
 }
 
 // Atualiza colocação no cheerleading
@@ -245,7 +319,7 @@ function setCheer(pos, team) {
   if (!isAdmin && viewingOfficial) return;
   state.cheer[pos] = team || null;
   renderAll();
-  isAdmin ? scheduleSave() : scheduleSimulationSave();
+  isAdmin ? (currentSerie === 'B' ? scheduleSaveB() : scheduleSave()) : scheduleSimulationSave();
 }
 
 // Zera tudo
@@ -255,5 +329,5 @@ function resetAll() {
   initState();
   currentSport = null;
   renderAll();
-  scheduleSave();
+  currentSerie === 'B' ? scheduleSaveB() : scheduleSave();
 }
