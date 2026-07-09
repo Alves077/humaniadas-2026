@@ -40,16 +40,13 @@
 
       <!-- Login -->
       <div id="authFormLogin">
-        <input type="text" id="loginUsername" class="modal-input" placeholder="Usuário" style="margin-bottom:8px;"
-          onkeydown="if(event.key==='Enter') document.getElementById('loginPassword').focus()">
-        <input type="password" id="loginPassword" class="modal-input" placeholder="Senha"
-          onkeydown="if(event.key==='Enter') submitLogin()">
+        <input type="text" id="loginUsername" class="modal-input" placeholder="Usuário" style="margin-bottom:8px;" onkeydown="if(event.key==='Enter') document.getElementById('loginPassword').focus()">
+        <input type="password" id="loginPassword" class="modal-input" placeholder="Senha" onkeydown="if(event.key==='Enter') submitLogin()">
       </div>
 
       <!-- Cadastro -->
       <div id="authFormRegister" style="display:none;">
-        <input type="text" id="regUsername" class="modal-input" placeholder="Usuário" style="margin-bottom:8px;"
-          onkeydown="if(event.key==='Enter') document.getElementById('regAtletica').focus()">
+        <input type="text" id="regUsername" class="modal-input" placeholder="Usuário" style="margin-bottom:8px;" onkeydown="if(event.key==='Enter') document.getElementById('regAtletica').focus()">
         <select id="regAtletica" class="modal-input" style="margin-bottom:8px;">
           <option value="">Selecione sua atlética</option>
           <option>GPDES</option>
@@ -62,8 +59,7 @@
           <option>HOTUR UFF</option>
           <option>RI UFRJ</option>
         </select>
-        <input type="password" id="regPassword" class="modal-input" placeholder="Senha (mín. 6 caracteres)"
-          onkeydown="if(event.key==='Enter') submitRegister()">
+        <input type="password" id="regPassword" class="modal-input" placeholder="Senha (mín. 6 caracteres)" onkeydown="if(event.key==='Enter') submitRegister()">
       </div>
 
       <div class="modal-error" id="authError"></div>
@@ -165,7 +161,11 @@
         <div class="view-header-actions">
           <div class="progress-pill" id="progressPill"></div>
           <button class="export-btn" onclick="exportRanking()" title="Exportar ranking como imagem">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+              <polyline points="7 10 12 15 17 10" />
+              <line x1="12" y1="15" x2="12" y2="3" />
+            </svg>
             <span class="export-btn-label">Exportar</span>
           </button>
         </div>
@@ -253,12 +253,8 @@
     <span>Patrocinado pelo <strong>Morro do Dendê</strong></span>
   </footer>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.110.1/dist/umd/supabase.min.js"
-    integrity="sha384-fx4y4cDx8NYfissnVzdGJY3yVXWY3rn5ab5HTUjpvgT35oDiyAbjjqnLhnRmESNE"
-    crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"
-    integrity="sha384-ZZ1pncU3bQe8y31yfZdMFdSpttDoPmOZg2wguVK9almUodir1PghgT0eY7Mrty8H"
-    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.110.1/dist/umd/supabase.min.js" integrity="sha384-fx4y4cDx8NYfissnVzdGJY3yVXWY3rn5ab5HTUjpvgT35oDiyAbjjqnLhnRmESNE" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js" integrity="sha384-ZZ1pncU3bQe8y31yfZdMFdSpttDoPmOZg2wguVK9almUodir1PghgT0eY7Mrty8H" crossorigin="anonymous"></script>
   <script src="js/config.js"></script>
   <script src="js/data.js"></script>
   <script src="js/logic.js"></script>
