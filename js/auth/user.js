@@ -239,11 +239,23 @@ async function submitDeleteAccount() {
   if (!password) { errEl.textContent = 'Digite sua senha.'; return; }
 
   const email = `${currentUser.username}@humaniadas.com`;
-  const { error: authError } = await db.auth.signInWithPassword({ email, password });
+  const { data, error: authError } = await db.auth.signInWithPassword({ email, password });
   if (authError) { errEl.textContent = 'Senha incorreta.'; return; }
 
-  await db.from('simulations').delete().eq('user_id', currentUser.id);
-  await db.from('profiles').delete().eq('id', currentUser.id);
+  try {
+    const res = await fetch('/api/delete-account', {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${data.session.access_token}` },
+    });
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      throw new Error(body.error || `Erro ${res.status}`);
+    }
+  } catch (e) {
+    errEl.textContent = e.message || 'Erro ao apagar conta. Tente novamente.';
+    return;
+  }
+
   await db.auth.signOut();
   window.location.replace(location.pathname);
 }

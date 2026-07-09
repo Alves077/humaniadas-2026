@@ -1,5 +1,14 @@
 // Gera js/config.js a partir das variáveis de ambiente do Vercel
 const fs = require('fs');
+
+// Em produção o checkout é sempre limpo (config.js está no .gitignore, nunca existe).
+// Localmente (ex: `vercel dev`) o arquivo já existe mantido à mão — reaproveita em vez
+// de exigir as env vars de novo.
+if (fs.existsSync('js/config.js')) {
+  console.log('js/config.js já existe — pulando geração (ambiente local)');
+  process.exit(0);
+}
+
 const url  = process.env.SUPABASE_URL;
 const key  = process.env.SUPABASE_ANON_KEY;
 const id   = process.env.CHAMPIONSHIP_ID;

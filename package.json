@@ -1,0 +1,8 @@
+{
+  "name": "humaniadas-2026",
+  "private": true,
+  "dependencies": {
+    "@supabase/supabase-js": "^2.110.1",
+    "dotenv": "^17.4.2"
+  }
+}
