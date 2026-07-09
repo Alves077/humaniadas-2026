@@ -40,7 +40,7 @@ js/
   logic.js              # computeGeneralStandings(), isSportComplete(), POINTS_BY_PLACEMENT
   main.js               # Roteamento de views, exportRanking(), clearBracket()
   auth/
-    admin.js            # isAdmin, submitAdminLogin() com verificação de app_metadata
+    admin.js            # isAdmin, updateAdminUI() (visibilidade de botões de edição)
     user.js             # Login de usuário normal, currentUser, menu avatar
   render/
     utils.js            # escHtml(), teamAvatar(), abbreviate() — carregado primeiro

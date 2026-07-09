@@ -85,22 +85,6 @@
     </div>
   </div>
 
-  <!-- Modal de login admin -->
-  <div class="modal-overlay" id="adminModal">
-    <div class="modal">
-      <div class="modal-icon">🔐</div>
-      <h2 class="modal-title">Acesso Admin</h2>
-      <p class="modal-sub">Entre com suas credenciais de admin</p>
-      <input type="text" id="adminEmailInput" class="modal-input" placeholder="Usuário" style="margin-bottom:8px;" onkeydown="if(event.key==='Enter') document.getElementById('adminPasswordInput').focus()">
-      <input type="password" id="adminPasswordInput" class="modal-input" placeholder="Senha" onkeydown="if(event.key==='Enter') submitAdminLogin()">
-      <div class="modal-error" id="adminError"></div>
-      <div class="modal-actions">
-        <button class="modal-btn cancel" onclick="closeAdminModal()">Cancelar</button>
-        <button class="modal-btn confirm" onclick="submitAdminLogin()">Entrar</button>
-      </div>
-    </div>
-  </div>
-
   <!-- Header -->
   <header class="top">
     <div class="top-inner">
@@ -123,10 +107,6 @@
         <div class="sync-status" id="syncStatus"></div>
         <div class="user-avatar-wrap" id="userAvatar" style="display:none;"></div>
         <button class="auth-btn" id="authBtn" onclick="openAuthModal('login')">Entrar</button>
-        <button class="admin-toggle" id="adminToggleBtn" onclick="handleAdminToggle()">
-          <span id="adminToggleIcon">🔒</span>
-          <span id="adminToggleLabel">Admin</span>
-        </button>
         <button class="burger-btn" id="burgerBtn" onclick="toggleMobileMenu()" aria-label="Menu">
           <span></span><span></span><span></span>
         </button>

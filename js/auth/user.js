@@ -20,6 +20,7 @@ async function onSignIn(user) {
   if (user.app_metadata?.is_admin) {
     isAdmin = true;
     updateAdminUI();
+    updateAuthUI();
     renderAll();
     if (location.hash === '#simulacoes') onSimulacoesEnter();
     return;
@@ -173,12 +174,10 @@ document.getElementById('authModal').addEventListener('click', function(e) {
 function updateAuthUI() {
   const authBtn = document.getElementById('authBtn');
   const avatarWrap = document.getElementById('userAvatar');
-  const adminBtn = document.getElementById('adminToggleBtn');
 
   if (currentUser) {
-    // Usuário comum logado: mostra avatar, esconde entrar e botão admin
+    // Usuário comum logado: mostra avatar com dados do perfil
     authBtn.style.display = 'none';
-    adminBtn.style.display = 'none';
     const initials = escHtml(currentUser.username.slice(0, 2).toUpperCase());
     avatarWrap.innerHTML = `
       <div class="user-avatar" onclick="toggleUserMenu()">
@@ -192,13 +191,25 @@ function updateAuthUI() {
         <button class="user-menu-btn" style="color:var(--danger);font-size:11px;opacity:0.7;" onclick="openDeleteAccountModal()">Apagar conta</button>
       </div>`;
     avatarWrap.style.display = '';
+  } else if (isAdmin) {
+    // Admin logado pelo fluxo normal de login: reaproveita o mesmo avatar/menu
+    authBtn.style.display = 'none';
+    avatarWrap.innerHTML = `
+      <div class="user-avatar" onclick="toggleUserMenu()">
+        <span class="user-avatar-initials">AD</span>
+      </div>
+      <div class="user-menu" id="userMenu" style="display:none;">
+        <div class="user-menu-name">Administrador</div>
+        <div class="user-menu-sub">Modo admin ativo</div>
+        <hr class="user-menu-sep">
+        <button class="user-menu-btn" onclick="logoutAdmin()">Sair</button>
+      </div>`;
+    avatarWrap.style.display = '';
   } else {
     // Visitante: mostra entrar, esconde avatar
     authBtn.style.display = '';
     avatarWrap.style.display = 'none';
     avatarWrap.innerHTML = '';
-    // Botão admin: só mostra se DB_READY (modo com banco real)
-    if (DB_READY) adminBtn.style.display = '';
   }
 }
 
