@@ -149,7 +149,7 @@ table.standings tbody tr:nth-child(2) td.rank { color: var(--silver); }
 table.standings tbody tr:nth-child(3) td.rank { color: var(--bronze); }
 table.standings tbody tr:nth-child(1) td { background: rgba(204, 16, 32, 0.04); }
 table.standings tbody tr:nth-child(1) td.team-col { border-left: 3px solid var(--accent); }
-table.standings td.zero { color: rgba(var(--accent-rgb, 200,112,42), 0.20); }
+table.standings td.zero { color: rgba(255, 255, 255, 0.5); }
 
 .legend-note {
   margin-top: 10px;

@@ -146,10 +146,10 @@ body {
     padding: 4px 8px;
   }
 
-  /* Geral: sobe a linha de ações (pill + exportar) para cima do título,
+  /* Geral: título na primeira linha, pill + exportar na segunda,
      em vez de disputar espaço na mesma linha */
   .view-header--geral {
-    flex-direction: column-reverse;
+    flex-direction: column;
     align-items: stretch;
     gap: 8px;
   }

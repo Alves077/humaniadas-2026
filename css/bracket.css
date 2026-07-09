@@ -88,8 +88,8 @@
   min-height: 34px;
 }
 .b-slot:last-of-type { border-bottom: none; }
-.b-slot.winner { background: rgba(204, 16, 32, 0.07); }
-.b-slot.winner .b-slot-name { color: var(--accent); font-weight: 600; }
+.b-slot.winner { background: rgba(var(--accent-rgb), 0.10); box-shadow: inset 3px 0 0 var(--accent); }
+.b-slot.winner .b-slot-name { color: var(--text); font-weight: 700; }
 .b-slot.empty  .b-slot-name { color: var(--text-dim); font-style: italic; }
 .b-slot-name {
   flex: 1;

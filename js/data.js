@@ -498,28 +498,35 @@ Object.assign(TEAM_PALETTES, {
     bgCard:      "#10211a",
     bgCardHover: "#162b22",
     accent:      "#184E44",
-    themeAccent: "#F0EFE8",   /* branco/off-white do anel do brasão, não um verde clareado */
-    accentDark:  "#2d7d6e",
-    gold:        "#F0EFE8",
-    goldDim:     "#1a2b24",
+    themeAccent: "#E8C468",   /* dourado do troféu "H" da atlética — distinto do --text padrão (o off-white do brasão colidia com o cinza-claro de texto comum, sumindo o destaque de 1º lugar) */
+    accentDark:  "#a8863f",
+    gold:        "#E8C468",
+    goldDim:     "#2e2410",
     textDim:     "#7fa89a",   /* 7.5:1 no bg #050d0a */
     textMid:     "#b8d0c6",
-    text:        "#F0EFE8",
+    text:        "#E8C468",
     aux:         ["#353D41"],
   },
   "CORUJAS UERJ": {
-    bg:          "#0d0a1c",
-    bgPanel:     "#130f28",
-    bgCard:      "#1a1538",
-    bgCardHover: "#221c48",
+    /* time é "o SPUFF invertido" (mesmo par roxo+amarelo do uniforme, só que
+       lá o roxo domina e o amarelo é detalhe; aqui é o oposto) — paleta
+       original usava fundo roxo-azulado + amarelo quase idêntico ao SPUFF.
+       Fundo/accent atualizados com as cores de referência passadas
+       (#2F253E, #371B5D, #EFC117), mantendo o roxo mais quente/magenta
+       (distinto do índigo do SPUFF) e o amarelo do uniforme, num tom
+       dourado que não repete o amarelo-limão neon do SPUFF. */
+    bg:          "#1a1422",
+    bgPanel:     "#2f253e",
+    bgCard:      "#371b5d",
+    bgCardHover: "#553d75",
     accent:      "#3D3B76",
-    themeAccent: "#ECCA06",
-    accentDark:  "#b89c04",
-    gold:        "#ECCA06",
-    goldDim:     "#332b00",
-    textDim:     "#a89bc8",   /* 7.6:1 no bg #0d0a1c */
-    textMid:     "#c8bce0",
-    text:        "#ECCA06",
+    themeAccent: "#EFC117",
+    accentDark:  "#a88a10",
+    gold:        "#EFC117",
+    goldDim:     "#3a3010",
+    textDim:     "#b89ad0",   /* 7.3:1 no bg #1a1422 */
+    textMid:     "#d8c6ec",
+    text:        "#E0A83C",
     aux:         ["#6C5790"],
   },
 });
