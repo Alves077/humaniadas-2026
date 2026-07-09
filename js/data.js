@@ -358,3 +358,252 @@ const BRACKETS = {
 };
 
 const SPORT_NAMES = Object.keys(BRACKETS);
+
+// ═════════════════════════════════════════════════════════════════════════════
+// SÉRIE B — dados aditivos, não alteram nada da Série A acima
+// ═════════════════════════════════════════════════════════════════════════════
+
+const TEAMS_B = [
+  "MONARCAS",
+  "RI UERJ",
+  "DGEI UFRJ",
+  "GEO UFF",
+  "HIST UFF",
+  "GALUDA DE CP",
+  "HIST UNIRIO",
+  "CORUJAS UERJ",
+];
+
+// Mapa time -> série ('A' | 'B'). Não exige coluna nova no banco — deriva
+// sempre client-side a partir do nome do time (profiles.atletica).
+const TEAM_SERIE = {};
+TEAMS.forEach(t => { TEAM_SERIE[t] = 'A'; });
+TEAMS_B.forEach(t => { TEAM_SERIE[t] = 'B'; });
+
+// Time do Cheerleading da Série B — só 6 dos 8 times participam
+const CHEER_TEAMS_B = [
+  "CORUJAS UERJ",
+  "HIST UNIRIO",
+  "GEO UFF",
+  "GALUDA DE CP",
+  "DGEI UFRJ",
+  "HIST UFF",
+];
+
+Object.assign(TEAM_COLORS, {
+  MONARCAS:        "#294E95",
+  "RI UERJ":       "#F6510C",
+  "DGEI UFRJ":     "#A9496C",
+  "GEO UFF":       "#39626E",
+  "HIST UFF":      "#D10905",
+  "GALUDA DE CP":  "#283D68",
+  "HIST UNIRIO":   "#184E44",
+  "CORUJAS UERJ":  "#3D3B76",
+});
+
+Object.assign(TEAM_PALETTES, {
+  MONARCAS: {
+    bg:          "#050818",
+    bgPanel:     "#0a1024",
+    bgCard:      "#101a34",
+    bgCardHover: "#152140",
+    accent:      "#294E95",
+    themeAccent: "#E0B229",
+    accentDark:  "#a8841c",
+    gold:        "#E0B229",
+    goldDim:     "#3a2c0a",
+    textDim:     "#8ba3d6",   /* 7.9:1 no bg #050818 */
+    textMid:     "#b8c8e8",
+    text:        "#E0B229",
+    aux:         ["#030416"],
+  },
+  "RI UERJ": {
+    bg:          "#1a0a08",
+    bgPanel:     "#241012",
+    bgCard:      "#2e1618",
+    bgCardHover: "#381c1e",
+    accent:      "#F6510C",
+    themeAccent: "#FF7920",
+    accentDark:  "#c25a10",
+    gold:        "#FF7920",
+    goldDim:     "#3a1d08",
+    textDim:     "#c88060",   /* 6.2:1 no bg #1a0a08 */
+    textMid:     "#e0a880",
+    text:        "#FF7920",
+    aux:         ["#9A3650"],
+  },
+  "DGEI UFRJ": {
+    bg:          "#12050a",
+    bgPanel:     "#1c0810",
+    bgCard:      "#261018",
+    bgCardHover: "#301620",
+    accent:      "#A9496C",
+    themeAccent: "#B8B6C1",
+    accentDark:  "#7a3350",
+    gold:        "#B8B6C1",
+    goldDim:     "#2a2530",
+    textDim:     "#c090a0",   /* 7.4:1 no bg #12050a */
+    textMid:     "#d8b0c0",
+    text:        "#B8B6C1",
+    aux:         ["#ffffff"],
+  },
+  "GEO UFF": {
+    bg:          "#050f10",
+    bgPanel:     "#0a1a1c",
+    bgCard:      "#0f2428",
+    bgCardHover: "#152e32",
+    accent:      "#39626E",
+    themeAccent: "#DEA83B",
+    accentDark:  "#a87d1c",
+    gold:        "#DEA83B",
+    goldDim:     "#2e2000",
+    textDim:     "#7fa8b0",   /* 7.5:1 no bg #050f10 */
+    textMid:     "#a8c8d0",
+    text:        "#DEA83B",
+    aux:         ["#294954"],
+  },
+  "HIST UFF": {
+    bg:          "#1c0605",
+    bgPanel:     "#280a08",
+    bgCard:      "#33100c",
+    bgCardHover: "#3e1610",
+    accent:      "#D10905",
+    themeAccent: "#FAB420",
+    accentDark:  "#b8850e",
+    gold:        "#FAB420",
+    goldDim:     "#3a2600",
+    textDim:     "#d0a080",   /* 8.4:1 no bg #1c0605 */
+    textMid:     "#e8c0a0",
+    text:        "#FAB420",
+    aux:         ["#E8A988"],
+  },
+  "GALUDA DE CP": {
+    bg:          "#050a18",
+    bgPanel:     "#0a1228",
+    bgCard:      "#0f1a38",
+    bgCardHover: "#152248",
+    accent:      "#283D68",
+    themeAccent: "#D4AF6A",
+    accentDark:  "#a8863f",
+    gold:        "#D4AF6A",
+    goldDim:     "#2e2410",
+    textDim:     "#8fa0c8",   /* 7.6:1 no bg #050a18 */
+    textMid:     "#b8c4e0",
+    text:        "#D4AF6A",
+    aux:         ["#132A4C"],
+  },
+  "HIST UNIRIO": {
+    bg:          "#050d0a",
+    bgPanel:     "#0a1712",
+    bgCard:      "#10211a",
+    bgCardHover: "#162b22",
+    accent:      "#184E44",
+    themeAccent: "#F0EFE8",   /* branco/off-white do anel do brasão, não um verde clareado */
+    accentDark:  "#2d7d6e",
+    gold:        "#F0EFE8",
+    goldDim:     "#1a2b24",
+    textDim:     "#7fa89a",   /* 7.5:1 no bg #050d0a */
+    textMid:     "#b8d0c6",
+    text:        "#F0EFE8",
+    aux:         ["#353D41"],
+  },
+  "CORUJAS UERJ": {
+    bg:          "#0d0a1c",
+    bgPanel:     "#130f28",
+    bgCard:      "#1a1538",
+    bgCardHover: "#221c48",
+    accent:      "#3D3B76",
+    themeAccent: "#ECCA06",
+    accentDark:  "#b89c04",
+    gold:        "#ECCA06",
+    goldDim:     "#332b00",
+    textDim:     "#a89bc8",   /* 7.6:1 no bg #0d0a1c */
+    textMid:     "#c8bce0",
+    text:        "#ECCA06",
+    aux:         ["#6C5790"],
+  },
+});
+
+// Chaveamento da Série B: direto pras quartas (sem prévia, diferente da Série A).
+// Cada esporte é um array de 4 confrontos de quartas [timeA, timeB].
+// timeB === null indica bye — o time já avança pra semifinal sem interação manual.
+const BRACKETS_B = {
+  "Futsal Masc": [
+    ["MONARCAS", "RI UERJ"],
+    ["HIST UNIRIO", "DGEI UFRJ"],
+    ["HIST UFF", "GALUDA DE CP"],
+    ["GEO UFF", "CORUJAS UERJ"],
+  ],
+  "Futsal Fem": [
+    ["DGEI UFRJ", "MONARCAS"],
+    ["GEO UFF", "HIST UNIRIO"],
+    ["CORUJAS UERJ", "HIST UFF"],
+    ["GALUDA DE CP", null],
+  ],
+  Fut7: [
+    ["GEO UFF", "MONARCAS"],
+    ["HIST UNIRIO", "HIST UFF"],
+    ["RI UERJ", "GALUDA DE CP"],
+    ["DGEI UFRJ", "CORUJAS UERJ"],
+  ],
+  "Handebol Fem": [
+    ["GEO UFF", "HIST UFF"],
+    ["HIST UNIRIO", "RI UERJ"],
+    ["DGEI UFRJ", "MONARCAS"],
+    ["CORUJAS UERJ", "GALUDA DE CP"],
+  ],
+  "Handebol Masc": [
+    ["HIST UFF", "MONARCAS"],
+    ["CORUJAS UERJ", "GEO UFF"],
+    ["HIST UNIRIO", "RI UERJ"],
+    ["DGEI UFRJ", "GALUDA DE CP"],
+  ],
+  "Volei Fem": [
+    ["CORUJAS UERJ", "DGEI UFRJ"],
+    ["HIST UFF", "GEO UFF"],
+    ["GALUDA DE CP", "HIST UNIRIO"],
+    ["RI UERJ", "MONARCAS"],
+  ],
+  "Volei Masc": [
+    ["HIST UFF", "DGEI UFRJ"],
+    ["MONARCAS", "RI UERJ"],
+    ["HIST UNIRIO", "GALUDA DE CP"],
+    ["GEO UFF", "CORUJAS UERJ"],
+  ],
+  "Basquete Fem": [
+    ["GEO UFF", "CORUJAS UERJ"],
+    ["MONARCAS", "RI UERJ"],
+    ["GALUDA DE CP", "HIST UFF"],
+    ["DGEI UFRJ", "HIST UNIRIO"],
+  ],
+  "Basquete Masc": [
+    ["DGEI UFRJ", "GALUDA DE CP"],
+    ["HIST UNIRIO", "CORUJAS UERJ"],
+    ["MONARCAS", "GEO UFF"],
+    ["HIST UFF", "RI UERJ"],
+  ],
+  "Tenis Mesa Fem": [
+    ["DGEI UFRJ", "MONARCAS"],
+    ["HIST UFF", "GALUDA DE CP"],
+    ["GEO UFF", "CORUJAS UERJ"],
+    ["RI UERJ", "HIST UNIRIO"],
+  ],
+  "Tenis Mesa Masc": [
+    ["HIST UFF", "GEO UFF"],
+    ["GALUDA DE CP", "RI UERJ"],
+    ["CORUJAS UERJ", "DGEI UFRJ"],
+    ["HIST UNIRIO", "MONARCAS"],
+  ],
+  "Cabo Guerra Fem": [
+    ["GALUDA DE CP", "GEO UFF"],
+    ["RI UERJ", "CORUJAS UERJ"],
+    ["HIST UFF", "DGEI UFRJ"],
+    ["HIST UNIRIO", "MONARCAS"],
+  ],
+  "Cabo Guerra Masc": [
+    ["CORUJAS UERJ", "RI UERJ"],
+    ["HIST UNIRIO", "DGEI UFRJ"],
+    ["HIST UFF", "GEO UFF"],
+    ["GALUDA DE CP", "MONARCAS"],
+  ],
+};
