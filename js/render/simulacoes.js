@@ -136,7 +136,9 @@ function simUserCard(sim) {
   return `<div class="sim-entry" data-uid="${uid}">
     <div class="sim-user-card${isOpen ? ' open' : ''}"
       style="border-left-color:${color}; background:rgba(${rgb},0.07);"
-      onclick="toggleSimDetail('${uid}')">
+      role="button" tabindex="0"
+      onclick="toggleSimDetail('${uid}')"
+      onkeydown="if(event.target===event.currentTarget&&(event.key==='Enter'||event.key===' ')){event.preventDefault();toggleSimDetail('${uid}');}">
       ${teamAvatar(sim.atletica, 34)}
       <div class="sim-user-info">
         <div class="sim-user-name">${escHtml(sim.username) || '—'}</div>

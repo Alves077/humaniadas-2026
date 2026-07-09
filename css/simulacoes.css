@@ -68,6 +68,8 @@
   font-family: var(--font-body);
 }
 .sim-user-card:hover { box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08); }
+/* div com role="button" não ganha outline nativo em todo navegador — foco visível pro teclado */
+.sim-user-card:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .sim-user-card.open  {
   border-radius: var(--radius) var(--radius) 0 0;
   box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06);

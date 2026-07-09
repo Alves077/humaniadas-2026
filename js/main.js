@@ -169,6 +169,10 @@ async function exportRanking() {
   });
 
   const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+  if (!blob) {
+    alert('Não foi possível gerar a imagem. Tente novamente.');
+    return;
+  }
   const file = new File([blob], 'humaniadas2026-ranking.png', { type: 'image/png' });
 
   if (navigator.canShare && navigator.canShare({ files: [file] })) {
