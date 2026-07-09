@@ -23,7 +23,10 @@ function filledSports(brackets) {
   return new Set(SPORT_NAMES.filter(s => brackets[s] && keys.some(k => !!brackets[s][k])));
 }
 
-// Computa standings a partir de dados arbitrários sem modificar o estado global
+// Computa standings a partir de dados arbitrários sem modificar o estado global.
+// Também retorna quais esportes estavam completos nesse bracket simulado — sem isso,
+// "time fez 0 pontos de verdade" e "esporte ainda não simulado" ficam indistinguíveis
+// (pointsForSport() retorna 0 pra todo mundo nos dois casos).
 function computeStandingsFrom(brackets, cheer) {
   const savedBrackets = JSON.parse(JSON.stringify(state.brackets));
   const savedCheer    = JSON.parse(JSON.stringify(state.cheer));
@@ -35,12 +38,13 @@ function computeStandingsFrom(brackets, cheer) {
   for (let i = 1; i <= 9; i++) state.cheer[i] = null;
   if (cheer) Object.entries(cheer).forEach(([k, v]) => { state.cheer[Number(k)] = v; });
 
-  const result = computeGeneralStandings();
+  const standings       = computeGeneralStandings();
+  const completedSports = new Set(SPORT_NAMES.filter(s => isSportComplete(s)));
 
   SPORT_NAMES.forEach(s => { state.brackets[s] = savedBrackets[s]; });
   Object.keys(savedCheer).forEach(k => { state.cheer[Number(k)] = savedCheer[k]; });
 
-  return result;
+  return { standings, completedSports };
 }
 
 // ─── Tabela completa de detalhe ───────────────────────────────────────────────
@@ -54,7 +58,7 @@ function simDetailTable(sim) {
     return '<p class="sim-empty" style="padding:10px 14px 8px;">Sem simulação registrada.</p>';
   }
 
-  const standings = computeStandingsFrom(sim.brackets, sim.cheer);
+  const { standings, completedSports } = computeStandingsFrom(sim.brackets, sim.cheer);
   const anyPoints = standings.some(r => r.total > 0);
 
   /* thS usa a cor inline do time (headerColor) para respeitar a identidade da atlética
@@ -72,15 +76,16 @@ function simDetailTable(sim) {
       : '';
 
     const cells = SPORT_NAMES.map(s => {
-      const v     = r.perSport[s];
+      const v      = r.perSport[s];
+      const played = completedSports.has(s);
       /* cellS: owner herda var(--text) do tema — #111 no claro, #F0E8DE no escuro.
          Não usa TEAM_TEXT_COLORS que são cores claras projetadas só para bg escuro. */
-      const cellS = v
+      const cellS = played
         ? (isOwner
             ? `style="font-weight:600;"`
             : `style="color:var(--text-mid);"`)
         : '';
-      return `<td class="${v === 0 ? 'zero' : ''}" ${cellS}>${v || '–'}</td>`;
+      return `<td class="${played && v === 0 ? 'zero' : ''}" ${cellS}>${played ? v : '–'}</td>`;
     }).join('');
 
     const posS   = isOwner ? `style="font-weight:700;"` : `style="color:var(--text-mid);"`;
