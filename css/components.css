@@ -154,14 +154,20 @@
   border-bottom-color: var(--accent);
 }
 
-/* ── View toggle bar ── */
+/* ── Toggles fixos (Série + Oficial/Simulação) ──
+   Empilhados num wrapper sticky só — evita ter que calcular a altura de
+   cada barra pra encaixar a próxima embaixo. */
+.sticky-toggles {
+  position: sticky;
+  top: var(--header-h);
+  z-index: 40;
+}
+
+.serie-toggle-bar,
 .view-toggle-bar {
   background: var(--bg-panel);
   border-bottom: 1px solid var(--line);
   padding: 0 24px;
-  position: sticky;
-  top: var(--header-h);
-  z-index: 40;
 }
 .view-toggle-inner {
   max-width: 1200px;

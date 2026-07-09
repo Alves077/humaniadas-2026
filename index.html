@@ -124,11 +124,21 @@
     <button class="mobile-tab" data-view="simulacoes" onclick="mobileNavTo('simulacoes')">👥 Simulações</button>
   </div>
 
-  <!-- Toggle Oficial / Simulação (visível só para usuários logados) -->
-  <div class="view-toggle-bar" id="viewToggle" style="display:none;">
-    <div class="view-toggle-inner">
-      <button class="vtab" data-view="sim" onclick="switchView(false)">Minha Simulação</button>
-      <button class="vtab active" data-view="oficial" onclick="switchView(true)">Resultado Oficial</button>
+  <div class="sticky-toggles">
+    <!-- Toggle Série A / Série B (visível pra todo mundo, inclusive visitante) -->
+    <div class="serie-toggle-bar" id="serieToggle">
+      <div class="view-toggle-inner">
+        <button class="vtab active" data-serie="A" onclick="switchSerie('A')">Série A</button>
+        <button class="vtab" data-serie="B" onclick="switchSerie('B')">Série B</button>
+      </div>
+    </div>
+
+    <!-- Toggle Oficial / Simulação (visível só para usuários logados) -->
+    <div class="view-toggle-bar" id="viewToggle" style="display:none;">
+      <div class="view-toggle-inner">
+        <button class="vtab" data-view="sim" onclick="switchView(false)">Minha Simulação</button>
+        <button class="vtab active" data-view="oficial" onclick="switchView(true)">Resultado Oficial</button>
+      </div>
     </div>
   </div>
 

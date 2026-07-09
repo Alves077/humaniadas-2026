@@ -23,6 +23,16 @@ function filledSports(brackets) {
   return new Set(SPORT_NAMES.filter(s => brackets[s] && keys.some(k => !!brackets[s][k])));
 }
 
+// Cada perfil guarda os dois pares de coluna (brackets/cheer p/ Série A,
+// brackets_b/cheer_b p/ Série B) — extrai o par certo pra série que está
+// sendo visualizada no momento, independente do time cadastrado da pessoa.
+function simDataFor(sim, serie = currentSerie) {
+  return {
+    brackets: serie === 'B' ? sim.brackets_b : sim.brackets,
+    cheer:    serie === 'B' ? sim.cheer_b    : sim.cheer,
+  };
+}
+
 // Computa standings a partir de dados arbitrários sem modificar o estado global.
 // Também retorna quais esportes estavam completos nesse bracket simulado — sem isso,
 // "time fez 0 pontos de verdade" e "esporte ainda não simulado" ficam indistinguíveis
@@ -58,12 +68,15 @@ function simDetailTable(sim) {
   const rgb         = hexToRgb(color);
   const headerColor = TEAM_PALETTES[sim.atletica]?.themeAccent || color;
 
-  if (!sim.brackets && !sim.cheer) {
+  // Mostra o palpite da pessoa pra série que está sendo visualizada agora —
+  // não necessariamente a série do time cadastrado dela (qualquer usuário
+  // pode simular as duas).
+  const { brackets, cheer } = simDataFor(sim, currentSerie);
+  if (!brackets && !cheer) {
     return '<p class="sim-empty" style="padding:10px 14px 8px;">Sem simulação registrada.</p>';
   }
 
-  const serie = TEAM_SERIE[sim.atletica] || 'A';
-  const { standings, completedSports } = computeStandingsFrom(sim.brackets, sim.cheer, serie);
+  const { standings, completedSports } = computeStandingsFrom(brackets, cheer, currentSerie);
   const anyPoints = standings.some(r => r.total > 0);
 
   /* thS usa a cor inline do time (headerColor) para respeitar a identidade da atlética
@@ -125,13 +138,16 @@ function simDetailTable(sim) {
 function simUserCard(sim) {
   const color  = TEAM_COLORS[sim.atletica] || '#888888';
   const rgb    = hexToRgb(color);
-  const sports = countSimSports(sim.brackets);
-  const sub    = sports === 0              ? 'Sem simulação' :
+  const { brackets, cheer } = simDataFor(sim, currentSerie);
+  const sports = countSimSports(brackets);
+  const cheerFilled = !!cheer && Object.values(cheer).some(Boolean);
+  const sub    = sports === 0 && !cheerFilled ? 'Sem simulação' :
                  sports === SPORT_NAMES.length ? 'Todos os esportes simulados' :
+                 sports === 0 ? 'Só cheerleading simulado' :
                  `${sports}/${SPORT_NAMES.length} esportes simulados`;
   const uid      = sim.user_id;
   const isOpen   = uid === openDetailId;
-  const filled   = filledSports(sim.brackets);
+  const filled   = filledSports(brackets);
 
   const dots = SPORT_NAMES.map(s =>
     `<span class="sim-sport-dot${filled.has(s) ? ' filled' : ''}" title="${s}"></span>`
@@ -215,9 +231,10 @@ function renderSimulacoes() {
     return;
   }
 
-  // Só mostra simulações de times da série ativa — misturar A e B na mesma
-  // lista sem distinção visual seria confuso.
-  const bySerie = allSimulations.filter(s => (TEAM_SERIE[s.atletica] || 'A') === currentSerie);
+  // Mostra todo mundo cadastrado, sempre — "sem simulação nessa série" é um
+  // estado válido, não motivo pra sumir da lista (o admin precisa ver/excluir
+  // qualquer conta, mesmo quem nunca simulou nada).
+  const bySerie = allSimulations;
 
   if (!bySerie.length) {
     grid.innerHTML = '<p class="sim-empty">Nenhuma simulação encontrada.</p>';
@@ -297,19 +314,23 @@ async function loadAllSimulations() {
   if (!DB_READY || (!currentUser && !isAdmin)) return;
   const [{ data: profiles, error: e1 }, { data: sims, error: e2 }] = await Promise.all([
     db.from('profiles').select('id, username, atletica'),
-    db.from('simulations').select('user_id, brackets, cheer'),
+    db.from('simulations').select('user_id, brackets, cheer, brackets_b, cheer_b'),
   ]);
   if (e1 || e2) { console.error('Erro ao carregar simulações', e1 || e2); return; }
 
   const simMap = {};
   (sims || []).forEach(s => { simMap[s.user_id] = s; });
 
+  // Qualquer usuário pode simular as duas séries — cada perfil carrega os dois
+  // pares de coluna, independente da série do próprio time cadastrado.
   allSimulations = (profiles || []).map(p => ({
-    user_id:  p.id,
-    username: p.username,
-    atletica: p.atletica,
-    brackets: simMap[p.id]?.brackets || null,
-    cheer:    simMap[p.id]?.cheer    || null,
+    user_id:    p.id,
+    username:   p.username,
+    atletica:   p.atletica,
+    brackets:   simMap[p.id]?.brackets   || null,
+    cheer:      simMap[p.id]?.cheer      || null,
+    brackets_b: simMap[p.id]?.brackets_b || null,
+    cheer_b:    simMap[p.id]?.cheer_b    || null,
   }));
 }
 

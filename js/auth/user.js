@@ -35,6 +35,10 @@ async function onSignIn(user) {
   if (profile) {
     currentUser = { id: user.id, ...profile };
     viewingOfficial = false;
+    // Aterrissa o usuário na própria série (o time dele determina qual é),
+    // não sempre na A.
+    currentSerie = TEAM_SERIE[profile.atletica] || 'A';
+    updateSerieToggleUI();
     applyTeamTheme(profile.atletica);
     updateAuthUI();
     updateViewToggleUI();
@@ -52,6 +56,8 @@ function onSignOut() {
   }
   currentUser = null;
   viewingOfficial = false;
+  currentSerie = 'A';
+  updateSerieToggleUI();
   resetTeamTheme();
   updateAuthUI();
   updateViewToggleUI();

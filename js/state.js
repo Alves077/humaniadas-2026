@@ -95,6 +95,36 @@ function updateViewToggleUI() {
   });
 }
 
+function updateSerieToggleUI() {
+  document.querySelectorAll('#serieToggle .vtab').forEach(btn =>
+    btn.classList.toggle('active', btn.dataset.serie === currentSerie));
+}
+
+async function switchSerie(serie) {
+  if (currentSerie === serie) return;
+  currentSerie = serie;
+  updateSerieToggleUI();
+
+  // Sempre parte de um estado limpo antes de carregar — sem isso, uma chave
+  // que a nova série não usa (ex: r1 na Série B) podia sobrar com valor da
+  // série anterior.
+  initState();
+
+  if (viewingOfficial || !currentUser) {
+    await (serie === 'B' ? loadStateB() : loadState());
+  } else {
+    await loadSimulation();
+  }
+
+  updateViewToggleUI();
+  updateAdminUI();
+  renderAll();
+  if (currentSport) renderBracket();
+  // renderAll() não cobre Simulações (ela só atualiza via onSimulacoesEnter);
+  // se for a aba ativa, força atualização também.
+  if (location.hash === '#simulacoes') onSimulacoesEnter();
+}
+
 initState();
 initState(officialState);
 initState(officialStateB);
@@ -244,24 +274,30 @@ async function saveStateB() {
 }
 
 // ─── Simulação do usuário ─────────────────────────────────────────────────────
+// Qualquer usuário logado pode simular as duas séries, independente do time
+// que escolheu no cadastro — por isso colunas separadas (brackets_b/cheer_b),
+// não é possível guardar as duas no mesmo objeto: os 13 esportes têm o mesmo
+// nome nas duas séries (ex: "Futsal Masc"), colidiria.
 
 async function loadSimulation() {
   if (!DB_READY || !currentUser) return;
   const { data } = await db
     .from('simulations')
-    .select('brackets, cheer')
+    .select('brackets, cheer, brackets_b, cheer_b')
     .eq('user_id', currentUser.id)
     .single();
 
   initState();
   if (data) {
-    if (data.brackets) {
+    const brackets = currentSerie === 'B' ? data.brackets_b : data.brackets;
+    const cheer    = currentSerie === 'B' ? data.cheer_b    : data.cheer;
+    if (brackets) {
       SPORT_NAMES.forEach(s => {
-        if (data.brackets[s]) state.brackets[s] = { ...state.brackets[s], ...data.brackets[s] };
+        if (brackets[s]) state.brackets[s] = { ...state.brackets[s], ...brackets[s] };
       });
     }
-    if (data.cheer) {
-      Object.entries(data.cheer).forEach(([pos, team]) => {
+    if (cheer) {
+      Object.entries(cheer).forEach(([pos, team]) => {
         state.cheer[Number(pos)] = team;
       });
     }
@@ -272,9 +308,10 @@ async function saveSimulation() {
   if (!DB_READY || !currentUser) return;
   setSyncStatus('Salvando…', 'saving');
   try {
-    const { error } = await db
-      .from('simulations')
-      .upsert({ user_id: currentUser.id, brackets: state.brackets, cheer: state.cheer, updated_at: new Date().toISOString() });
+    const payload = currentSerie === 'B'
+      ? { user_id: currentUser.id, brackets_b: state.brackets, cheer_b: state.cheer, updated_at: new Date().toISOString() }
+      : { user_id: currentUser.id, brackets: state.brackets, cheer: state.cheer, updated_at: new Date().toISOString() };
+    const { error } = await db.from('simulations').upsert(payload);
     if (error) throw error;
     setSyncStatus('Salvo ✓');
     setTimeout(() => setSyncStatus(''), 2000);
