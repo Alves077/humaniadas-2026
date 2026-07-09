@@ -324,11 +324,13 @@
 }
 .modal-input {
   width: 100%;
-  /* fundo levemente acinzentado para criar hierarquia dentro do modal branco */
+  /* fundo e texto fixos (não var(--text)): esse input é sempre claro,
+     independente do tema da página (claro/admin ou escuro/atlética) —
+     se o texto seguisse var(--text) ficaria claro-sobre-claro no tema escuro */
   background: #F4F4F6;
   border: 1px solid var(--border-input);
   border-radius: var(--radius-sm);
-  color: var(--text);
+  color: #111111;
   font-size: 14px;
   padding: 9px 12px;
   text-align: center;

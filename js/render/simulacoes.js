@@ -127,8 +127,12 @@ function simUserCard(sim) {
     `<span class="sim-sport-dot${filled.has(s) ? ' filled' : ''}" title="${s}"></span>`
   ).join('');
 
+  const deleteBtn = isAdmin
+    ? `<button class="sim-delete-btn" title="Excluir usuário" data-uid="${uid}" data-username="${escHtml(sim.username)}">🗑</button>`
+    : '';
+
   return `<div class="sim-entry" data-uid="${uid}">
-    <button class="sim-user-card${isOpen ? ' open' : ''}"
+    <div class="sim-user-card${isOpen ? ' open' : ''}"
       style="border-left-color:${color}; background:rgba(${rgb},0.07);"
       onclick="toggleSimDetail('${uid}')">
       ${teamAvatar(sim.atletica, 34)}
@@ -137,8 +141,9 @@ function simUserCard(sim) {
         <div class="sim-user-sub">${sub}</div>
       </div>
       <div class="sim-sport-dots" aria-hidden="true">${dots}</div>
+      ${deleteBtn}
       <span class="sim-user-arrow${isOpen ? ' open' : ''}">›</span>
-    </button>
+    </div>
     <div class="sim-user-detail" id="sdd-${uid}" style="display:none;"
       data-accent="${color}"></div>
   </div>`;
@@ -249,6 +254,13 @@ function renderSimulacoes() {
         <div class="sim-group-cards">${users.map(simUserCard).join('')}</div>
       </div>`
     ).join('');
+
+  grid.querySelectorAll('.sim-delete-btn').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      adminDeleteUser(btn.dataset.uid, btn.dataset.username);
+    });
+  });
 }
 
 function setSimFilter(value) {

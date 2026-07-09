@@ -19,3 +19,34 @@ function updateAdminUI() {
 }
 
 updateAdminUI();
+
+// ─── Excluir usuário (admin) ───────────────────────────────────────────────────
+
+async function adminDeleteUser(userId, username) {
+  if (!confirm(`Excluir a conta de "${username}"? Ação irreversível — perfil, simulação e login serão apagados.`)) return;
+
+  const { data: { session } } = await db.auth.getSession();
+  if (!session) return;
+
+  try {
+    const res = await fetch('/api/admin-delete-user', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${session.access_token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ targetId: userId }),
+    });
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      throw new Error(body.error || `Erro ${res.status}`);
+    }
+  } catch (e) {
+    alert(e.message || 'Erro ao excluir usuário.');
+    return;
+  }
+
+  allSimulations = allSimulations.filter(s => s.user_id !== userId);
+  renderSimulacoes();
+  alert(`Conta de "${username}" excluída com sucesso.`);
+}

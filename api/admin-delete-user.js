@@ -22,13 +22,27 @@ module.exports = async (req, res) => {
     return;
   }
 
-  const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(token);
-  if (authError || !user) {
+  const { data: { user: caller }, error: authError } = await supabaseAdmin.auth.getUser(token);
+  if (authError || !caller) {
     res.status(401).json({ error: 'Sessão inválida' });
     return;
   }
+  if (!caller.app_metadata?.is_admin) {
+    res.status(403).json({ error: 'Apenas admin pode excluir usuários' });
+    return;
+  }
 
-  const { error } = await deleteUserCascade(supabaseAdmin, user.id);
+  const targetId = req.body?.targetId;
+  if (!targetId) {
+    res.status(400).json({ error: 'targetId ausente' });
+    return;
+  }
+  if (targetId === caller.id) {
+    res.status(400).json({ error: 'Use "Apagar conta" para excluir sua própria conta' });
+    return;
+  }
+
+  const { error } = await deleteUserCascade(supabaseAdmin, targetId);
   if (error) {
     res.status(500).json({ error });
     return;

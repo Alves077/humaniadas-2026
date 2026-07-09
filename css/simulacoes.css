@@ -107,6 +107,25 @@
 }
 .sim-sport-dot.filled { background: var(--accent); opacity: 0.85; }
 
+/* ── Excluir usuário (admin) ── */
+.sim-delete-btn {
+  flex-shrink: 0;
+  background: rgba(224, 85, 69, 0.10);
+  border: 1px solid rgba(224, 85, 69, 0.40);
+  border-radius: var(--radius-sm);
+  color: var(--danger);
+  font-size: 15px;
+  line-height: 1;
+  padding: 6px 10px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.sim-delete-btn:hover {
+  color: #FFFFFF;
+  border-color: var(--danger);
+  background: var(--danger);
+}
+
 /* ── Seta de expansão ── */
 .sim-user-arrow {
   font-size: 20px;
