@@ -11,7 +11,11 @@ module.exports = async (req, res) => {
   try {
     supabaseAdmin = getSupabaseAdmin();
   } catch (e) {
-    res.status(500).json({ error: e.message });
+    // Detalhe (ex: nome da env var ausente) só nos logs do servidor — resposta
+    // genérica pro cliente, já que esse erro pode ocorrer antes de qualquer
+    // checagem de autenticação.
+    console.error('admin-delete-user:', e.message);
+    res.status(500).json({ error: 'Erro de configuração do servidor' });
     return;
   }
 
