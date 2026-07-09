@@ -4,9 +4,10 @@ Painel de acompanhamento do campeonato Humaniadas 2026 — chaveamento eliminat�
 
 ## Stack
 
-- HTML/CSS/JS estático — sem build step, sem npm, sem bundler
-- [Supabase](https://supabase.com) como backend (auth + banco de dados) via CDN
-- Deploy via Vercel (hospedagem de arquivos estáticos)
+- HTML/CSS/JS estático — sem bundler no client, script tags carregados em ordem fixa (ver abaixo)
+- [Supabase](https://supabase.com) como backend (auth + banco de dados) via CDN no client
+- `api/` — Vercel Serverless Functions (Node) para operações que exigem a chave `service_role` (bypassa RLS), nunca expostas ao client
+- Deploy via Vercel: build estático (`build.js` gera `js/config.js` a partir de env vars) + as functions em `api/`
 
 ## Funcionalidades
 
@@ -23,9 +24,11 @@ Ao fazer login, o tema visual da página inteira muda para as cores da atlética
 
 ### Segurança
 
-- Dados do banco escapados com `escHtml()` antes de qualquer `innerHTML`
-- Admin verificado via `app_metadata.is_admin` no JWT (não apenas pela presença de sessão)
+- Dados do banco escapados com `escHtml()` antes de qualquer `innerHTML`; nunca dado do banco em `onclick` inline (usar `data-*` + `addEventListener`)
+- Admin verificado via `app_metadata.is_admin` no JWT (não apenas pela presença de sessão) — login é só pelo fluxo normal de "Entrar", não existe um caminho de login separado pra admin
 - RLS (Row Level Security) ativo em todas as tabelas Supabase
+- Exclusão de conta (self-service e via admin) roda como Serverless Function server-side com `service_role`, nunca client-side — é a única forma de apagar de fato `auth.users` (client com `anon` key não tem essa permissão)
+- `SUPABASE_SERVICE_ROLE_KEY` só existe nas env vars do Vercel e em `.env.local` (gitignored) — nunca no client
 - SRI (Subresource Integrity) nos dois scripts CDN externos
 - `js/config.js` no `.gitignore` — não vai ao repositório
 
@@ -33,27 +36,36 @@ Ao fazer login, o tema visual da página inteira muda para as cores da atlética
 
 ```
 index.html              # Entrada única; define ordem de carregamento dos scripts
+build.js                # Gera js/config.js a partir de env vars (pula se o arquivo já existir)
+package.json            # Dependências npm — só usadas pelas serverless functions em api/
+api/
+  delete-account.js     # Serverless function: usuário apaga a própria conta (self-service)
+  admin-delete-user.js  # Serverless function: admin apaga qualquer conta
+  _lib/
+    supabaseAdmin.js     # Cliente Supabase com service_role (server-only)
+    deleteUserCascade.js # Exclusão em cascata: simulations -> profiles -> auth.users
+    authenticate.js      # Extrai/valida Bearer token, compartilhado pelos dois endpoints
 js/
   config.js             # SUPABASE_URL, SUPABASE_ANON_KEY, CHAMPIONSHIP_ID (não commitado)
   data.js               # TEAM_PALETTES, TEAM_COLORS, TEAM_TEXT_COLORS, BRACKETS, SPORT_NAMES
-  state.js              # Estado global, Supabase client, applyTeamTheme(), save/load
   logic.js              # computeGeneralStandings(), isSportComplete(), POINTS_BY_PLACEMENT
-  main.js               # Roteamento de views, exportRanking(), clearBracket()
+  state.js              # Estado global, Supabase client, applyTeamTheme(), save/load
+  main.js               # Roteamento de views, exportRanking(), canEditBrackets()
   auth/
-    admin.js            # isAdmin, updateAdminUI() (visibilidade de botões de edição)
-    user.js             # Login de usuário normal, currentUser, menu avatar
+    admin.js            # isAdmin, updateAdminUI(), adminDeleteUser()
+    user.js             # Login de usuário normal, currentUser, menu avatar, submitDeleteAccount()
   render/
     utils.js            # escHtml(), teamAvatar(), abbreviate() — carregado primeiro
     standings.js        # renderGeral(): pódio + tabela classificação
+    sports.js           # renderChaveamentos(): lista de esportes
     bracket.js          # renderBracket(): chaveamento eliminatório
     cheer.js            # renderCheerleading(): posições de cheerleading
-    sports.js           # renderChaveamentos(): lista de esportes
     simulacoes.js       # renderSimulacoes(): cards + expansão inline com tabela por atlética
     index.js            # renderAll(): chama todos os renders
 css/
-  variables.css         # CSS custom properties padrão (tema default terracota)
+  variables.css         # CSS custom properties padrão (tema claro, accent vermelho)
   reset.css             # Reset base
-  layout.css            # Shell, views, isolation: isolate
+  layout.css            # Shell, views, isolation: isolate, headers responsivos
   components.css        # Header, mobile nav, modais, avatar dropdown
   podium.css            # Pódio e tabela de classificação geral
   bracket.css           # Chaveamento eliminatório
@@ -66,26 +78,44 @@ img/
 
 ## Configuração local
 
+### Para trabalhar só no front-end (sem mexer em `api/`)
+
 1. Crie `js/config.js` com as credenciais do projeto Supabase:
 
 ```js
-const SUPABASE_URL   = 'https://SEU_PROJECT_ID.supabase.co';
+const SUPABASE_URL = 'https://SEU_PROJECT_ID.supabase.co';
 const SUPABASE_ANON_KEY = 'SUA_ANON_KEY';
 const CHAMPIONSHIP_ID = '1';
 ```
 
 2. Abra `index.html` com Live Server (VS Code) ou qualquer servidor HTTP local.  
-   Não funciona abrindo o arquivo diretamente (`file://`) por conta de CORS.
+   Não funciona abrindo o arquivo diretamente (`file://`) por conta de CORS.  
+   Esse servidor **não executa** as functions em `api/` — só arquivos estáticos.
+
+### Para testar as serverless functions em `api/` (ex: exclusão de conta)
+
+Precisa da [Vercel CLI](https://vercel.com/docs/cli):
+
+```bash
+npm install -g vercel
+vercel login
+vercel link                                            # linka a pasta ao projeto na Vercel
+vercel env pull .env.local --environment=production     # baixa as env vars (não-sensíveis)
+vercel dev                                               # serve o site + as functions juntos
+```
+
+A `SUPABASE_SERVICE_ROLE_KEY` fica marcada como *Sensitive* no Vercel, então o `vercel env pull` não traz o valor real — precisa colar manualmente em `.env.local` (o `vercel env pull` sobrescreve o arquivo inteiro, então rode-o **antes** de editar `.env.local` à mão, nunca depois).
 
 ## Ordem dos scripts em `index.html`
 
-A ordem é crítica — não há bundler para resolver dependências:
+A ordem é crítica — não há bundler para resolver dependências no client (a ordem real está em `index.html`, mantenha esta lista sincronizada se ela mudar):
 
 ```
-config.js → data.js → state.js → logic.js
-→ render/utils.js → render/standings.js → render/bracket.js
-→ render/cheer.js → render/sports.js → render/simulacoes.js → render/index.js
-→ auth/admin.js → auth/user.js → main.js
+config.js → data.js → logic.js → state.js
+→ auth/admin.js → auth/user.js
+→ render/utils.js → render/standings.js → render/sports.js → render/bracket.js
+→ render/cheer.js → render/simulacoes.js → render/index.js
+→ main.js
 ```
 
 ## Atléticas participantes
@@ -105,13 +135,22 @@ config.js → data.js → state.js → logic.js
 ## Convenções importantes
 
 - **`themeAccent`** (não `accent`) é o valor aplicado ao CSS `--accent`. `accent` pode ser escuro demais para texto.
-- **`TEAM_TEXT_COLORS`** é a cor do texto na linha destacada da atlética na tabela de simulações — diferente de `themeAccent`.
+- **Theming 100% via CSS custom properties**, inclusive o header — nunca hardcodear cor de UI. `applyTeamTheme()`/`resetTeamTheme()` em `js/state.js` setam/limpam as vars no `:root`.
+- **Gold reservado só pra medalhas** (1º/2º/3º no pódio) — qualquer outro destaque usa `var(--accent)`.
+- **Ações destrutivas usam `var(--danger)` fixo**, não seguem a paleta da atlética — sinal visual precisa ser universal, não se camuflar no tema local.
+- **Ícones são SVG inline, não emoji** — emoji não renderiza de forma confiável em todo navegador/SO.
 - **`escHtml()`** obrigatório em todo dado do banco antes de `innerHTML`. A injeção via `onclick` não é segura com escaping simples — usar `data-*` + `addEventListener`.
+- **`canEditBrackets()`** (`js/main.js`) é a fonte única de verdade pra permissão de editar/limpar chaveamento (`isAdmin || (currentUser && !viewingOfficial)`). Sempre chamar `updateAdminUI()` depois de mudar `isAdmin`/`currentUser`/`viewingOfficial`, senão a visibilidade dos botões de limpar fica desatualizada.
+- **Sem `ON DELETE CASCADE` no schema** — `simulations.user_id → profiles.id` e `profiles.id → auth.users.id` são sem cascade. Exclusão de usuário sempre na ordem `simulations` → `profiles` → `auth.users` (centralizado em `api/_lib/deleteUserCascade.js`).
+- **`CHAMPIONSHIP_ID` é sempre string** — `championship_state.id` é `text` no schema, nunca tratar como `Number()`.
+- **Admin não tem linha em `profiles`** — por design. Queries de "conta órfã" devem excluir quem tem `app_metadata.is_admin = true`.
 - **SRI**: se atualizar versão de `@supabase/supabase-js` ou `html2canvas`, recalcular SHA-384 e atualizar `integrity=` em `index.html`.
 - **`isolation: isolate` no `.shell`** — não remover; garante que conteúdo da página fique abaixo dos overlays do menu mobile.
 - **`.mobile-nav` fora do `<header>`** — não mover; `backdrop-filter` no header quebra `position: fixed`.
 
 ## Admin
+
+Não existe login separado pra admin — é a mesma tela de "Entrar" de qualquer usuário. `onSignIn()` detecta `app_metadata.is_admin` no JWT e ativa o modo admin automaticamente.
 
 Para marcar um usuário como admin, atualize `app_metadata` via Supabase Dashboard ou SQL:
 
