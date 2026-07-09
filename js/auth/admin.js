@@ -63,11 +63,13 @@ function updateAdminUI() {
     label.textContent = 'Admin';
     btn.classList.remove('admin-active');
   }
-  if (authBtn) authBtn.style.display = (isAdmin || currentUser) ? 'none' : '';
+  const hasCurrentUser = typeof currentUser !== 'undefined' && !!currentUser;
+  if (authBtn) authBtn.style.display = (isAdmin || hasCurrentUser) ? 'none' : '';
+  const canEdit = typeof canEditBrackets === 'function' ? canEditBrackets() : isAdmin;
   const clearBtn = document.getElementById('clearBracketBtn');
-  if (clearBtn) clearBtn.style.visibility = canEditBrackets() ? 'visible' : 'hidden';
+  if (clearBtn) clearBtn.style.visibility = canEdit ? 'visible' : 'hidden';
   const clearAllBtn = document.getElementById('clearAllBracketsBtn');
-  if (clearAllBtn) clearAllBtn.style.display = canEditBrackets() ? '' : 'none';
+  if (clearAllBtn) clearAllBtn.style.display = canEdit ? '' : 'none';
 }
 
 document.getElementById('adminModal').addEventListener('click', function(e) {

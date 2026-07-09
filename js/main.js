@@ -69,7 +69,7 @@ function clearBracket() {
   if (!canEditBrackets() || !currentSport) return;
   if (!confirm(`Limpar todos os resultados de ${currentSport}?`)) return;
   state.brackets[currentSport] = {};
-  saveState();
+  isAdmin ? saveState() : saveSimulation();
   renderAll();
 }
 
@@ -197,6 +197,6 @@ function clearAllBrackets() {
     : 'Limpar todos os resultados da sua simulação? Esta ação não pode ser desfeita.';
   if (!confirm(msg)) return;
   SPORT_NAMES.forEach(s => { state.brackets[s] = {}; });
-  saveState();
+  isAdmin ? saveState() : saveSimulation();
   renderAll();
 }
