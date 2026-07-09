@@ -1,5 +1,6 @@
 const { getSupabaseAdmin } = require('./_lib/supabaseAdmin');
 const { deleteUserCascade } = require('./_lib/deleteUserCascade');
+const { authenticateRequest } = require('./_lib/authenticate');
 
 module.exports = async (req, res) => {
   if (req.method !== 'POST') {
@@ -19,18 +20,8 @@ module.exports = async (req, res) => {
     return;
   }
 
-  const authHeader = req.headers.authorization || '';
-  const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null;
-  if (!token) {
-    res.status(401).json({ error: 'Token ausente' });
-    return;
-  }
-
-  const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(token);
-  if (authError || !user) {
-    res.status(401).json({ error: 'Sessão inválida' });
-    return;
-  }
+  const user = await authenticateRequest(supabaseAdmin, req, res);
+  if (!user) return;
 
   const { error } = await deleteUserCascade(supabaseAdmin, user.id);
   if (error) {

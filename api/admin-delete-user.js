@@ -1,5 +1,6 @@
 const { getSupabaseAdmin } = require('./_lib/supabaseAdmin');
 const { deleteUserCascade } = require('./_lib/deleteUserCascade');
+const { authenticateRequest } = require('./_lib/authenticate');
 
 module.exports = async (req, res) => {
   if (req.method !== 'POST') {
@@ -19,18 +20,9 @@ module.exports = async (req, res) => {
     return;
   }
 
-  const authHeader = req.headers.authorization || '';
-  const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null;
-  if (!token) {
-    res.status(401).json({ error: 'Token ausente' });
-    return;
-  }
+  const caller = await authenticateRequest(supabaseAdmin, req, res);
+  if (!caller) return;
 
-  const { data: { user: caller }, error: authError } = await supabaseAdmin.auth.getUser(token);
-  if (authError || !caller) {
-    res.status(401).json({ error: 'Sessão inválida' });
-    return;
-  }
   if (!caller.app_metadata?.is_admin) {
     res.status(403).json({ error: 'Apenas admin pode excluir usuários' });
     return;
