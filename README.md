@@ -2,6 +2,8 @@
 
 Painel de acompanhamento do campeonato Humaniadas 2026 — chaveamento eliminatório, classificação geral, cheerleading e simulações por atlética.
 
+*Desenvolvido a pedido de membros da AAASP UFF para acompanhar o campeonato Humaniadas 2026.*
+
 🔗 **Deploy:** [humaniadas-2026.vercel.app](https://humaniadas-2026.vercel.app/#geral)
 
 ![Preview](img/preview.png)
