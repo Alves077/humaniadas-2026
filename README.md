@@ -2,6 +2,10 @@
 
 Painel de acompanhamento do campeonato Humaniadas 2026 — chaveamento eliminatório, classificação geral, cheerleading e simulações por atlética.
 
+🔗 **Deploy:** [humaniadas-2026.vercel.app](https://humaniadas-2026.vercel.app/#geral)
+
+![Preview](img/preview.png)
+
 ## Stack
 
 - HTML/CSS/JS estático — sem bundler no client, script tags carregados em ordem fixa (ver abaixo)
@@ -18,9 +22,13 @@ Painel de acompanhamento do campeonato Humaniadas 2026 — chaveamento eliminat�
 | **Cheerleading** | Ranking de colocações de cheerleading; admin preenche |
 | **Simulações** | Cada usuário simula um cenário; painel mostra todas as simulações com expansão inline e paleta da atlética |
 
+### Séries A e B
+
+O campeonato tem duas divisões independentes: Série A (9 atléticas, chaveamento com prévia) e Série B (8 atléticas, direto pras quartas). Um toggle no topo da página troca entre elas. Qualquer usuário logado pode simular as duas séries independentemente, mesmo que o time dele seja só de uma delas — por isso `simulations` tem colunas separadas (`brackets`/`cheer` pra Série A, `brackets_b`/`cheer_b` pra Série B).
+
 ### Theming por atlética
 
-Ao fazer login, o tema visual da página inteira muda para as cores da atlética do usuário. Cada uma das 9 atléticas tem paleta própria definida em `js/data.js` (backgrounds, accent, gold, textDim, textMid).
+Ao fazer login, o tema visual da página inteira muda para as cores da atlética do usuário. Cada uma das 17 atléticas (9 da A + 8 da B) tem paleta própria definida em `js/data.js` (backgrounds, accent, gold, textDim, textMid).
 
 ### Segurança
 
@@ -47,9 +55,9 @@ api/
     authenticate.js      # Extrai/valida Bearer token, compartilhado pelos dois endpoints
 js/
   config.js             # SUPABASE_URL, SUPABASE_ANON_KEY, CHAMPIONSHIP_ID (não commitado)
-  data.js               # TEAM_PALETTES, TEAM_COLORS, TEAM_TEXT_COLORS, BRACKETS, SPORT_NAMES
-  logic.js              # computeGeneralStandings(), isSportComplete(), POINTS_BY_PLACEMENT
-  state.js              # Estado global, Supabase client, applyTeamTheme(), save/load
+  data.js               # TEAM_PALETTES, TEAM_COLORS, TEAM_TEXT_COLORS, BRACKETS, SPORT_NAMES, TEAM_SERIE, BRACKETS_B (Série B)
+  logic.js              # computeGeneralStandings()/computeGeneralStandingsB(), isSportComplete(), POINTS_BY_PLACEMENT
+  state.js              # Estado global, Supabase client, applyTeamTheme(), save/load, currentSerie, switchSerie()
   main.js               # Roteamento de views, exportRanking(), canEditBrackets()
   auth/
     admin.js            # isAdmin, updateAdminUI(), adminDeleteUser()
@@ -120,6 +128,8 @@ config.js → data.js → logic.js → state.js
 
 ## Atléticas participantes
 
+### Série A
+
 | Atlética | Cor primária | themeAccent |
 |----------|-------------|-------------|
 | SPUFF | #5a3cb3 | #ffdd00 |
@@ -131,6 +141,19 @@ config.js → data.js → logic.js → state.js
 | AECS | #8a6800 | #d7ae26 |
 | HOTUR UFF | #020684 | #f0e0e0 |
 | RI UFF | #1a3a6a | #c4c4c6 |
+
+### Série B
+
+| Atlética | Cor primária | themeAccent |
+|----------|-------------|-------------|
+| MONARCAS | #294E95 | #E0B229 |
+| RI UERJ | #F6510C | #FF7920 |
+| DGEI UFRJ | #A9496C | #B8B6C1 |
+| GEO UFF | #39626E | #DEA83B |
+| HIST UFF | #D10905 | #FAB420 |
+| GALUDA DE CP | #283D68 | #D4AF6A |
+| HIST UNIRIO | #184E44 | #E8C468 |
+| CORUJAS UERJ | #3D3B76 | #EFC117 |
 
 ## Convenções importantes
 
