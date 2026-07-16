@@ -213,15 +213,16 @@ const SPORT_ICONS = {
 // D8..D20 entram direto na rodada 2 (byes)
 const BRACKETS = {
   "Cabo Guerra Masc": {
+    // Rechaveamento (sorteio refeito) — ver commit da atualização
     B4: "PSICO PUC",
     B5: "PSICO UFRJ",
     D8: "RI UFF",
-    D10: "RI UFRJ",
-    D12: "AECS",
-    D14: "HOTUR UFF",
+    D10: "HOTUR UFF",
+    D12: "RI UFRJ",
+    D14: "GPDES",
     D16: "GEMEL",
     D18: "SPUFF",
-    D20: "GPDES",
+    D20: "AECS",
   },
   "Cabo Guerra Fem": {
     B4: "AECS",
@@ -334,15 +335,16 @@ const BRACKETS = {
     D20: "AECS",
   },
   "Futsal Masc": {
+    // Rechaveamento (sorteio refeito) — ver commit da atualização
     B4: "HOTUR UFF",
     B5: "GPDES",
     D8: "AECS",
-    D10: "GEMEL",
-    D12: "RI UFF",
-    D14: "PSICO UFRJ",
-    D16: "SPUFF",
+    D10: "PSICO UFRJ",
+    D12: "RI UFRJ",
+    D14: "SPUFF",
+    D16: "GEMEL",
     D18: "PSICO PUC",
-    D20: "RI UFRJ",
+    D20: "RI UFF",
   },
   "Futsal Fem": {
     B4: "HOTUR UFF",
