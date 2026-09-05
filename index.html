@@ -35,7 +35,7 @@
     <div class="modal">
       <div class="auth-tabs">
         <button class="auth-tab active" id="authTabLogin" onclick="switchAuthTab('login')">Entrar</button>
-        <!-- <button class="auth-tab" id="authTabRegister" onclick="switchAuthTab('register')">Cadastrar</button> -->
+        <button class="auth-tab" id="authTabRegister" onclick="switchAuthTab('register')">Cadastrar</button>
       </div>
 
       <!-- Login -->
@@ -44,8 +44,8 @@
         <input type="password" id="loginPassword" class="modal-input" placeholder="Senha" onkeydown="if(event.key==='Enter') submitLogin()">
       </div>
 
-      <!-- Cadastro — desativado (modo somente admin) -->
-      <!-- <div id="authFormRegister" style="display:none;">
+      <!-- Cadastro -->
+      <div id="authFormRegister" style="display:none;">
         <input type="text" id="regUsername" class="modal-input" placeholder="Usuário" style="margin-bottom:8px;" onkeydown="if(event.key==='Enter') document.getElementById('regAtletica').focus()">
         <select id="regAtletica" class="modal-input" style="margin-bottom:8px;">
           <option value="">Selecione sua atlética</option>
@@ -72,7 +72,7 @@
           </optgroup>
         </select>
         <input type="password" id="regPassword" class="modal-input" placeholder="Senha (mín. 6 caracteres)" onkeydown="if(event.key==='Enter') submitRegister()">
-      </div> -->
+      </div>
 
       <div class="modal-error" id="authError"></div>
       <div class="modal-actions">
@@ -82,8 +82,8 @@
     </div>
   </div>
 
-  <!-- Modal apagar conta — desativado (modo somente admin) -->
-  <!-- <div class="modal-overlay" id="deleteAccountModal">
+  <!-- Modal apagar conta -->
+  <div class="modal-overlay" id="deleteAccountModal">
     <div class="modal">
       <div class="modal-icon">⚠️</div>
       <h2 class="modal-title">Apagar conta</h2>
@@ -95,7 +95,7 @@
         <button class="modal-btn confirm" style="background:var(--danger);border-color:var(--danger);" onclick="submitDeleteAccount()">Apagar</button>
       </div>
     </div>
-  </div> -->
+  </div>
 
   <!-- Header -->
   <header class="top">
@@ -112,7 +112,7 @@
         <button class="tab active" data-view="geral">🏆 Geral</button>
         <button class="tab" data-view="chaveamentos">🎯 Chaveamentos</button>
         <button class="tab" data-view="cheerleading">📣 Cheerleading</button>
-        <!-- <button class="tab" data-view="simulacoes">👥 Simulações</button> -->
+        <button class="tab" data-view="simulacoes">👥 Simulações</button>
       </nav>
 
       <div class="header-right">
@@ -133,7 +133,7 @@
     <button class="mobile-tab" data-view="geral" onclick="mobileNavTo('geral')">🏆 Geral</button>
     <button class="mobile-tab" data-view="chaveamentos" onclick="mobileNavTo('chaveamentos')">🎯 Chaveamentos</button>
     <button class="mobile-tab" data-view="cheerleading" onclick="mobileNavTo('cheerleading')">📣 Cheerleading</button>
-    <!-- <button class="mobile-tab" data-view="simulacoes" onclick="mobileNavTo('simulacoes')">👥 Simulações</button> -->
+    <button class="mobile-tab" data-view="simulacoes" onclick="mobileNavTo('simulacoes')">👥 Simulações</button>
   </div>
 
   <div class="sticky-toggles">
